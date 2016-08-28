@@ -18,7 +18,7 @@ So,  you create orbita-component with settings for controll windows and messages
     //or you can install Electron as dependence and write in package.json script, like {"start" :"electron index.js"}
     npm install electron-prebuilt@0.36.0 --save
     //Install Orbita
-    npm install orbita@1.0.3 --save
+    npm install orbita@1.0.8 --save
 
 # Example of usage
     var orbita = require('orbita');
@@ -34,8 +34,14 @@ So,  you create orbita-component with settings for controll windows and messages
                 return [{
                     //unique id
                     id: state.test == 28 ? "w1" : "w2",
-                    //starting url
-                    url: __dirname + "/index.html",
+                    start:{
+                        //starting url
+                        url: __dirname + "/index.html",
+                        script: __dirname + "/start.js",
+                        args: {
+                            test: "value"
+                        }
+                    },                    
                     //you can create many nanoservices for one window
                     services:[{
                         ////path to service for create nanoservice
