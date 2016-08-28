@@ -1,0 +1,8 @@
+[ignore]
+.*/node_modules/.*
+[include]
+flow-typed/
+interfaces/
+[libs]
+
+[options]
