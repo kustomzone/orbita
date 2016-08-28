@@ -1,4 +1,4 @@
-# Orbita: framework for Atom/Electron with reactive windows controller and nanoservice's support.
+# Orbita: framework for Atom/Electron with reactive windows controller and nanoservice's support
 [![Build Status](https://travis-ci.org/arvitaly/orbita.svg?branch=master)](https://travis-ci.org/arvitaly/orbita)
 [![npm version](https://badge.fury.io/js/orbita.svg)](https://badge.fury.io/js/orbita)
 # What is it?
@@ -70,8 +70,8 @@ So,  you create orbita-component with settings for controll windows and messages
                             }, 100);
                         },
                         "in2": (args) => {
-                            expect(args).toBe(fixture2 + fixture1 + fixture1 + fixture2);
-                            done();
+                            //!!!Args collected through all events = (fixture2 + fixture1 + fixture1 + fixture2);
+                            
                         }
                     },
                     out: {
