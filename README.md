@@ -36,12 +36,12 @@ So,  you create orbita-component with settings for controll windows and messages
                     id: state.test == 28 ? "w1" : "w2",
                     //starting url
                     url: __dirname + "/index.html",
-                    //args for creating service
-                    args: state.fix + state.test,
                     //you can create many nanoservices for one window
                     services:[{
                         ////path to service for create nanoservice
                         module: __dirname + "/service1.js",
+                        //args for creating service
+                        args: state.fix + state.test,
                         //transports for nanoservice
                         transports: {
                             "tr1": {
