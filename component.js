@@ -1,6 +1,9 @@
 var electron = require('electron');
 var BrowserWindow = electron.BrowserWindow;
 var app = electron.app;
+
+var serviceModulePath = require.resolve('./service');
+
 app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') {
         app.quit();
@@ -17,8 +20,11 @@ var defaultWindowOpts = {
     },
     userAgent: "Mozilla/5.0 (Windows NT 6.4; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2225.0 Safari/537.36"
 }
-
+var gid = 0;
 module.exports = function (component) {
+    gid++;
+
+    var orbitaID = "Orbita__" + gid + parseInt(Math.random() * 1000);
 
     var windowOpts = deepExtend(defaultWindowOpts, component.opts);
     var state = component.state || {};
@@ -28,6 +34,13 @@ module.exports = function (component) {
     })
 
     return {
+        id: orbitaID,
+        send: function (address, event, data) {
+            console.log("send", address, event, data)
+            for (var id in windows) {
+                windows[id].window.webContents.send(address, event, data);
+            }
+        },
         setState: function (partialState) {
             var newState = {}
             for (var k in state) {
@@ -45,26 +58,30 @@ module.exports = function (component) {
     function rerender() {
         var needWindows = component.render.apply(undefined, [state]);
         for (var id in windows) {
-            if (!needWindows[id]) {
+            if (needWindows.filter((w) => {
+                return w.id == id;
+            }).length == 0) {
                 removeWindow(id);
             }
         }
-        for (var id2 in needWindows) {
-            if (!windows[id2]) {
-                createWindow(needWindows[id2]);
+        needWindows.map((w) => {
+            if (!windows[w.id]) {
+                createWindow(w);
             }
-        }
+        })
     }
     function createWindow(windowConfig) {
-
-        windowOpts = deepExtend(windowOpts, windowConfig.opts);
-        var window = new BrowserWindow({ width: windowOpts.width, webPreferences: windowOpts.webPreferences });
-
+        console.log("createWindow", windowConfig)
         windows[windowConfig.id] = {
             id: windowConfig.id,
-            window: window,
+            window: null,
             config: windowConfig
         }
+        windowOpts = deepExtend(windowOpts, windowConfig.opts);
+        var window = new BrowserWindow({ width: windowOpts.width, webPreferences: windowOpts.webPreferences });
+        windows[windowConfig.id].window = window;
+
+
         window.loadURL(windowConfig.url, { userAgent: windowOpts.userAgent });
 
         window.openDevTools();
@@ -79,18 +96,19 @@ module.exports = function (component) {
         })
 
         window.on('close', function () {
-            delete windows[windowConfig.id];
+            removeWindow(windowConfig.id, true);
             rerender();
         });
 
         window.webContents.on('dom-ready', function () {
-            window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(require.resolve(windowConfig.service)) + ")(window.$$$require$$$, " + JSON.stringify(windowConfig.args) + ");")
+            window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(serviceModulePath) + ")(window.$$$require$$$," + JSON.stringify(require.resolve(windowConfig.service)) + ", " + JSON.stringify(windowConfig.args) + ", " + JSON.stringify(windowConfig.transports) + ", " + JSON.stringify(windowConfig.links) + ");")
         })
     }
-    function removeWindow(id) {
-        windows[id].window.close();
+    function removeWindow(id, alreadyClosed) {
+        if (!alreadyClosed) {
+            console.log("Close window ", id)
+            windows[id].window.close();
+        }
         delete windows[id];
     }
-
-
 }

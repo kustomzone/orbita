@@ -1,6 +1,18 @@
-module.exports = (require, args) => {
-    var ipcRenderer = require('ipc-renderer');
-    console.log(args)
-    ipcRenderer.send("testipc", args)
-
+module.exports = (args) => {
+    var callback;
+    return {
+        in: {
+            in1: (data) => {
+                console.log("service in1 event", data);
+                setTimeout(() => {
+                    callback(data + args);
+                }, 50)
+            }
+        },
+        out: {
+            out1: (cb) => {
+                callback = cb;
+            }
+        }
+    }
 }
