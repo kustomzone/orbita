@@ -2,6 +2,7 @@ var electron = require('electron');
 var BrowserWindow = electron.BrowserWindow;
 var app = electron.app;
 
+var transportsModulePath = require.resolve('./transports');
 var serviceModulePath = require.resolve('./service');
 
 app.on('window-all-closed', function () {
@@ -31,7 +32,10 @@ var defaultWindowOpts = {
         nodeIntegration: false,
         preload: __dirname + '/preload.js'
     },
-    userAgent: "Mozilla/5.0 (Windows NT 6.4; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2225.0 Safari/537.36"
+    userAgent: "Mozilla/5.0 (Windows NT 6.4; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2225.0 Safari/537.36",
+    transports: {
+        'orbita-ipc-client': require.resolve('./orbita-ipc-client')
+    }
 }
 var gid = 0;
 module.exports = function (component) {
@@ -121,6 +125,7 @@ module.exports = function (component) {
         window.webContents.on('dom-ready', function () {
             if (windowConfig.services) {
                 windowConfig.services.map((serviceConfig) => {
+                    window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(transportsModulePath) + ")(window.$$$require$$$," + JSON.stringify(windowOpts.transports) + ")")
                     window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(serviceModulePath) + ")(window.$$$require$$$," + JSON.stringify(require.resolve(serviceConfig.module)) + ", " + JSON.stringify(serviceConfig.args) + ", " + JSON.stringify(serviceConfig.transports) + ", " + JSON.stringify(serviceConfig.links) + ");")
                 })
             }
