@@ -1,22 +1,23 @@
 var electron = require('electron');
 var BrowserWindow = electron.BrowserWindow;
 var app = electron.app;
-
+var ipcMain = electron.ipcMain;
 var transportsModulePath = require.resolve('./transports');
 var serviceModulePath = require.resolve('./service');
+var startModulePath = require.resolve('./start');
 
-app.on('window-all-closed', function () {
+app.on('window-all-closed', function() {
     app.quit();
 });
 
 var u = {
-    appOnReady: function (cb) {
+    appOnReady: function(cb) {
         appOnReadyListeners.push(cb);
     }
 }
 
 app.on('ready', () => {
-    u.appOnReady = function (cb) {
+    u.appOnReady = function(cb) {
         cb();
     }
     appOnReadyListeners.map((cb) => {
@@ -42,7 +43,7 @@ var defaultWindowOpts = {
     }
 }
 var gid = 0;
-module.exports = function (component) {
+module.exports = function(component) {
     gid++;
 
     var orbitaID = "Orbita__" + gid + parseInt(Math.random() * 1000);
@@ -56,13 +57,13 @@ module.exports = function (component) {
 
     return {
         id: orbitaID,
-        send: function (address, event, data) {
+        send: function(address, event, data) {
             console.log("send", address, event, data)
             for (var id in windows) {
                 windows[id].window.webContents.send(address, event, data);
             }
         },
-        setState: function (partialState) {
+        setState: function(partialState) {
             var newState = {}
             for (var k in state) {
                 newState[k] = state[k]
@@ -105,34 +106,59 @@ module.exports = function (component) {
             config: windowConfig
         }
         windowOpts = deepExtend(windowOpts, windowConfig.opts);
-        var window = new BrowserWindow({ width: windowOpts.width, webPreferences: windowOpts.webPreferences });
+        var window = new BrowserWindow({ width: windowOpts.width, height: windowOpts.height, webPreferences: windowOpts.webPreferences });
         windows[windowConfig.id].window = window;
 
 
-        window.loadURL(windowConfig.url, { userAgent: windowOpts.userAgent });
+        window.loadURL(windowConfig.start.url, { userAgent: windowOpts.userAgent });
 
         window.openDevTools();
-        window.webContents.on('did-fail-load', function () {
+        window.webContents.on('did-fail-load', function() {
             removeWindow(windowConfig.id);
             rerender();
         });
 
-        window.webContents.on('crashed', function () {
+        window.webContents.on('crashed', function() {
             removeWindow(windowConfig.id);
             rerender();
         })
 
-        window.on('close', function () {
+        window.on('close', function() {
             removeWindow(windowConfig.id, true);
             rerender();
         });
 
-        window.webContents.on('dom-ready', function () {
-            if (windowConfig.services) {
-                windowConfig.services.map((serviceConfig) => {
-                    window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(transportsModulePath) + ")(window.$$$require$$$," + JSON.stringify(windowOpts.transports) + "); window.$$$require$$$(" + JSON.stringify(serviceModulePath) + ")(window.$$$require$$$," + JSON.stringify(require.resolve(serviceConfig.module)) + ", " + JSON.stringify(serviceConfig.args) + ", " + JSON.stringify(serviceConfig.transports) + ", " + JSON.stringify(serviceConfig.links) + ");")
+        window.webContents.on('dom-ready', function() {
+            var p;
+            if (windowConfig.start.script) {
+                window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(startModulePath) + ")(window.$$$require$$$," + JSON.stringify(windowConfig.id) + "," + JSON.stringify(require.resolve(windowConfig.start.script)) + "," + JSON.stringify(windowConfig.start.args) + ")");
+                p = new Promise((resolve, reject) => {
+                    ipcMain.on("ORBITA__START_" + windowConfig.id, (e, result) => {
+                        if (result.status == "success") {
+                            resolve()
+                        } else {
+                            reject(result.error);
+                        }
+                    })
                 })
+
+            } else {
+                p = Promise.resolve();
             }
+            p.then(() => {
+                ipcMain.removeAllListeners("ORBITA__START_" + windowConfig.id);
+                if (windowConfig.services) {
+                    windowConfig.services.map((serviceConfig) => {
+                        window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(transportsModulePath) + ")(window.$$$require$$$," + JSON.stringify(windowOpts.transports) + "); window.$$$require$$$(" + JSON.stringify(serviceModulePath) + ")(window.$$$require$$$," + JSON.stringify(require.resolve(serviceConfig.module)) + ", " + JSON.stringify(serviceConfig.args) + ", " + JSON.stringify(serviceConfig.transports) + ", " + JSON.stringify(serviceConfig.links) + ");")
+                    })
+                }
+            }).catch((err) => {
+                ipcMain.removeAllListeners("ORBITA__START_" + windowConfig.id);
+                console.error(err);
+                removeWindow(windowConfig.id);
+                rerender();
+            })
+
 
         })
     }

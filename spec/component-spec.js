@@ -1,11 +1,12 @@
 var nanoservice = require('nanoservice');
 nanoservice.use("orbita-ipc-server", require('./../orbita-ipc-server'));
 var Orbita = require('./../index')
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 500000;
 describe("Windows controller", () => {
     it("orbita", (done) => {
         var fixture1 = "dfgk6hu95et";
         var fixture2 = "testfklgjdfg";
+        var fixture3 = "fixture3val";
         var orbita = Orbita({
             state: {
                 test: 28,
@@ -15,7 +16,13 @@ describe("Windows controller", () => {
                 console.log(state);
                 return [{
                     id: state.test == 28 ? "w1" : "w2",
-                    url: __dirname + "/index.html",
+                    start: {
+                        url: __dirname + "/index.html",
+                        script: __dirname + "/start.js",
+                        args: {
+                            v: fixture3
+                        }
+                    },
                     services: [{
                         args: state.fix + state.test,
                         module: __dirname + "/service1.js",
@@ -61,7 +68,7 @@ describe("Windows controller", () => {
                             }, 100);
                         },
                         "in2": (args) => {
-                            expect(args).toBe(fixture2 + fixture1 + fixture1 + fixture2);
+                            expect(args).toBe(fixture2 + fixture1 + fixture1 + fixture2 + fixture3);
                             done();
                         }
                     },
