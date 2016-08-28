@@ -18,7 +18,7 @@ So,  you create orbita-component with settings for controll windows and messages
     //or you can install Electron as dependence and write in package.json script, like {"start" :"electron index.js"}
     npm install electron-prebuilt@0.36.0 --save
     //Install Orbita
-    npm install orbita@1.0.2 --save
+    npm install orbita@1.0.3 --save
 
 # Example of usage
     var orbita = require('orbita');
@@ -38,32 +38,35 @@ So,  you create orbita-component with settings for controll windows and messages
                     url: __dirname + "/index.html",
                     //args for creating service
                     args: state.fix + state.test,
-                    //path to service for create nanoservice
-                    service: __dirname + "/service1.js",
-                    //transports for nanoservice
-                    transports: {
-                        "tr1": {
-                            "type": "orbita-ipc-client",
-                            opts: {
-                                address: "addr1"
+                    //you can create many nanoservices for one window
+                    services:[{
+                        ////path to service for create nanoservice
+                        module: __dirname + "/service1.js",
+                        //transports for nanoservice
+                        transports: {
+                            "tr1": {
+                                "type": "orbita-ipc-client",
+                                opts: {
+                                    address: "addr1"
+                                }
                             }
-                        }
-                    },
-                    //links for nanoservice
-                    links: [
-                        {
-                            type: "in",
-                            name: "in1",
-                            to: "event2",
-                            transport: "tr1"
                         },
-                        {
-                            type: "out",
-                            name: "out1",
-                            to: "event1",
-                            transport: "tr1"
-                        }
-                    ]
+                        //links for nanoservice
+                        links: [
+                            {
+                                type: "in",
+                                name: "in1",
+                                to: "event2",
+                                transport: "tr1"
+                            },
+                            {
+                                type: "out",
+                                name: "out1",
+                                to: "event1",
+                                transport: "tr1"
+                            }
+                        ]
+                    }]
                 }]
             }
         })

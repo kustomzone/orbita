@@ -1,6 +1,6 @@
 var nanoservice = require('nanoservice');
 nanoservice.use("orbita-ipc-server", require('./../orbita-ipc-server'));
-var Orbita = require('./../component')
+var Orbita = require('./../index')
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
 describe("Windows controller", () => {
     it("orbita", (done) => {
@@ -16,30 +16,32 @@ describe("Windows controller", () => {
                 return [{
                     id: state.test == 28 ? "w1" : "w2",
                     url: __dirname + "/index.html",
-                    args: state.fix + state.test,
-                    service: __dirname + "/service1.js",
-                    transports: {
-                        "tr1": {
-                            "type": "orbita-ipc-client",
-                            opts: {
-                                address: "addr1"
+                    services: [{
+                        args: state.fix + state.test,
+                        module: __dirname + "/service1.js",
+                        transports: {
+                            "tr1": {
+                                "type": "orbita-ipc-client",
+                                opts: {
+                                    address: "addr1"
+                                }
                             }
-                        }
-                    },
-                    links: [
-                        {
-                            type: "in",
-                            name: "in1",
-                            to: "event2",
-                            transport: "tr1"
                         },
-                        {
-                            type: "out",
-                            name: "out1",
-                            to: "event1",
-                            transport: "tr1"
-                        }
-                    ]
+                        links: [
+                            {
+                                type: "in",
+                                name: "in1",
+                                to: "event2",
+                                transport: "tr1"
+                            },
+                            {
+                                type: "out",
+                                name: "out1",
+                                to: "event1",
+                                transport: "tr1"
+                            }
+                        ]
+                    }]
                 }]
             }
         })
