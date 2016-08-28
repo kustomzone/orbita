@@ -7,7 +7,7 @@ Orbita is component, like React, but for electron windows. It has `state` and me
 Method `render` should return array of windows options, like as `id`, `url` etc.
 After calling `render` orbita compare current opened windows and result of `render` by `id`, then close old windows and create new.
 
-Also, orbita supported nanoservice (https://github.com/arvitaly/nanoservice), and two transports `orbita-ipc-server` and `orbita-ipc-client`. So, you can work with many window and main process in single workflow. Every window is one nanoservice.
+Also, orbita supported nanoservice (https://github.com/arvitaly/node-nanoservice), and two transports `orbita-ipc-server` and `orbita-ipc-client`. So, you can work with many window and main process in single workflow. Every window is one nanoservice.
 
 So,  you create orbita-component with settings for controll windows and messages, forget it, and work for bussiness logic.
 
