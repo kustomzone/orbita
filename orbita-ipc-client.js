@@ -1,4 +1,4 @@
-var ipcRenderer = require('ipc-renderer');
+var ipcRenderer = require('electron').ipcRenderer;
 module.exports = (opts) => {
     var callbacks = {
 

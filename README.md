@@ -13,12 +13,12 @@ So,  you create orbita-component with settings for controll windows and messages
 
 # Install
 
-    //First, install Electron in global, now Orbita works with 0.36.0 version
-    npm install electron-prebuilt@0.36.0 -g
+    //First, install Electron in global, now Orbita works with 1.3.4 version
+    npm install electron-prebuilt -g
     //or you can install Electron as dependence and write in package.json script, like {"start" :"electron index.js"}
-    npm install electron-prebuilt@0.36.0 --save
+    npm install electron-prebuilt --save
     //Install Orbita
-    npm install orbita@1.0.9 --save
+    npm install orbita@1.1.0 --save
 
 # Example of usage
     var orbita = require('orbita');
