@@ -9,6 +9,19 @@ app.on('window-all-closed', function () {
         app.quit();
     }
 });
+app.on('ready', () => {
+    appOnReadyListeners.map((cb) => {
+        cb();
+    })
+    appOnReady = function (cb) {
+        cb();
+    }
+});
+var appOnReadyListeners = [];
+var appOnReady = function (cb) {
+    appOnReadyListeners.push(cb);
+}
+
 var deepExtend = require('deep-extend');
 
 var defaultWindowOpts = {
@@ -29,9 +42,9 @@ module.exports = function (component) {
     var windowOpts = deepExtend(defaultWindowOpts, component.opts);
     var state = component.state || {};
     var windows = {};
-    app.on('ready', () => {
+    appOnReady(() => {
         rerender();
-    })
+    });
 
     return {
         id: orbitaID,
@@ -71,6 +84,11 @@ module.exports = function (component) {
         })
     }
     function createWindow(windowConfig) {
+        appOnReady(() => {
+            _createWindow(windowConfig)
+        })
+    }
+    function _createWindow(windowConfig) {
         console.log("createWindow", windowConfig)
         windows[windowConfig.id] = {
             id: windowConfig.id,
