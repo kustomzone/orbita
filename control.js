@@ -1,5 +1,5 @@
 module.exports = (require, id, script, args) => {
-    var ipcRenderer = require('ipc-renderer');
+    var ipcRenderer = require('electron').ipcRenderer;
     var onStart = () => {
         ipcRenderer.send("ORBITA__CONTROL_" + id, "start")
     }
