@@ -6,9 +6,7 @@ var transportsModulePath = require.resolve('./transports');
 var serviceModulePath = require.resolve('./service');
 
 app.on('window-all-closed', function () {
-    if (process.platform !== 'darwin') {
-        app.quit();
-    }
+    app.quit();
 });
 
 var u = {
@@ -132,8 +130,7 @@ module.exports = function (component) {
         window.webContents.on('dom-ready', function () {
             if (windowConfig.services) {
                 windowConfig.services.map((serviceConfig) => {
-                    window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(transportsModulePath) + ")(window.$$$require$$$," + JSON.stringify(windowOpts.transports) + ")")
-                    window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(serviceModulePath) + ")(window.$$$require$$$," + JSON.stringify(require.resolve(serviceConfig.module)) + ", " + JSON.stringify(serviceConfig.args) + ", " + JSON.stringify(serviceConfig.transports) + ", " + JSON.stringify(serviceConfig.links) + ");")
+                    window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(transportsModulePath) + ")(window.$$$require$$$," + JSON.stringify(windowOpts.transports) + "); window.$$$require$$$(" + JSON.stringify(serviceModulePath) + ")(window.$$$require$$$," + JSON.stringify(require.resolve(serviceConfig.module)) + ", " + JSON.stringify(serviceConfig.args) + ", " + JSON.stringify(serviceConfig.transports) + ", " + JSON.stringify(serviceConfig.links) + ");")
                 })
             }
 

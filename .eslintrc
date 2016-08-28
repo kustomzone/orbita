@@ -26,10 +26,8 @@
     "./node_modules",
     "./interfaces"
   ],
-  "globals": {
-    "$$$require$$$": true
-  },
   "env": {
+    "browser": true,
     "node": true,
     "es6": true,
     "jasmine": true

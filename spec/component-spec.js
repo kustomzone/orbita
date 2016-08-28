@@ -1,7 +1,7 @@
 var nanoservice = require('nanoservice');
 nanoservice.use("orbita-ipc-server", require('./../orbita-ipc-server'));
 var Orbita = require('./../index')
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
 describe("Windows controller", () => {
     it("orbita", (done) => {
         var fixture1 = "dfgk6hu95et";
