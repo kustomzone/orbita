@@ -11,7 +11,17 @@ Also, orbita supported nanoservice (https://github.com/arvitaly/nanoservice), an
 
 So,  you create orbita-component with settings for controll windows and messages, forget it, and work for bussiness logic.
 
+# Install
+
+    //First, install Electron in global, now Orbita works with 0.36.0 version
+    npm install electron-prebuilt@0.36.0 -g
+    //or you can install Electron as dependence and write in package.json script, like "start" :"electron index.js"
+    npm install electron-prebuilt@0.36.0
+    //Install Orbita
+    npm install orbita@1.0.1 --save
+
 # Example of usage
+    var orbita = require('orbita');
     //create orbita component
     var orbita1 = orbita({
             //initial state

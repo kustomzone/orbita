@@ -7,9 +7,7 @@ addons:
     packages:
       - xvfb
 install:
-  - . $HOME/.nvm/nvm.sh
-  - nvm install stable
-  - nvm use stable
+  - npm install electron-prebuilt@0.36.0 -g
   - npm install
   - export DISPLAY=':99.0'
   - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
