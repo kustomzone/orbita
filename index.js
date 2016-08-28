@@ -10,18 +10,24 @@ app.on('window-all-closed', function () {
         app.quit();
     }
 });
+
+var u = {
+    appOnReady: function (cb) {
+        appOnReadyListeners.push(cb);
+    }
+}
+
 app.on('ready', () => {
+    u.appOnReady = function (cb) {
+        cb();
+    }
     appOnReadyListeners.map((cb) => {
         cb();
     })
-    appOnReady = function (cb) {
-        cb();
-    }
+
 });
 var appOnReadyListeners = [];
-var appOnReady = function (cb) {
-    appOnReadyListeners.push(cb);
-}
+
 
 var deepExtend = require('deep-extend');
 
@@ -46,7 +52,7 @@ module.exports = function (component) {
     var windowOpts = deepExtend(defaultWindowOpts, component.opts);
     var state = component.state || {};
     var windows = {};
-    appOnReady(() => {
+    u.appOnReady(() => {
         rerender();
     });
 
@@ -88,7 +94,8 @@ module.exports = function (component) {
         })
     }
     function createWindow(windowConfig) {
-        appOnReady(() => {
+
+        u.appOnReady(() => {
             _createWindow(windowConfig)
         })
     }
