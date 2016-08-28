@@ -4,7 +4,7 @@ var app = electron.app;
 var ipcMain = electron.ipcMain;
 var transportsModulePath = require.resolve('./transports');
 var serviceModulePath = require.resolve('./service');
-var startModulePath = require.resolve('./start');
+var controlModulePath = require.resolve('./control');
 
 app.on('window-all-closed', function() {
     app.quit();
@@ -110,7 +110,7 @@ module.exports = function(component) {
         windows[windowConfig.id].window = window;
 
 
-        window.loadURL(windowConfig.start.url, { userAgent: windowOpts.userAgent });
+        window.loadURL(windowConfig.url, { userAgent: windowOpts.userAgent });
 
         window.openDevTools();
         window.webContents.on('did-fail-load', function() {
@@ -128,45 +128,50 @@ module.exports = function(component) {
             rerender();
         });
 
-        window.webContents.on('dom-ready', function() {
-            var p;
-            if (windowConfig.start.script) {
-                window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(startModulePath) + ")(window.$$$require$$$," + JSON.stringify(windowConfig.id) + "," + JSON.stringify(require.resolve(windowConfig.start.script)) + "," + JSON.stringify(windowConfig.start.args) + ")");
-                p = new Promise((resolve, reject) => {
-                    ipcMain.on("ORBITA__START_" + windowConfig.id, (e, result) => {
-                        if (result.status == "success") {
-                            resolve()
-                        } else {
-                            reject(result.error);
-                        }
-                    })
+        var onLoaded = () => {
+            if (windowConfig.services) {
+                windowConfig.services.map((serviceConfig) => {
+                    window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(transportsModulePath) + ")(window.$$$require$$$," + JSON.stringify(windowOpts.transports) + "); window.$$$require$$$(" + JSON.stringify(serviceModulePath) + ")(window.$$$require$$$," + JSON.stringify(require.resolve(serviceConfig.module)) + ", " + JSON.stringify(serviceConfig.args) + ", " + JSON.stringify(serviceConfig.transports) + ", " + JSON.stringify(serviceConfig.links) + ");")
                 })
-
-            } else {
-                p = Promise.resolve();
             }
-            p.then(() => {
-                ipcMain.removeAllListeners("ORBITA__START_" + windowConfig.id);
-                if (windowConfig.services) {
-                    windowConfig.services.map((serviceConfig) => {
-                        window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(transportsModulePath) + ")(window.$$$require$$$," + JSON.stringify(windowOpts.transports) + "); window.$$$require$$$(" + JSON.stringify(serviceModulePath) + ")(window.$$$require$$$," + JSON.stringify(require.resolve(serviceConfig.module)) + ", " + JSON.stringify(serviceConfig.args) + ", " + JSON.stringify(serviceConfig.transports) + ", " + JSON.stringify(serviceConfig.links) + ");")
-                    })
-                }
-            }).catch((err) => {
-                ipcMain.removeAllListeners("ORBITA__START_" + windowConfig.id);
-                console.error(err);
-                removeWindow(windowConfig.id);
-                rerender();
-            })
+        }
 
+        ipcMain.on("ORBITA__CONTROL_" + windowConfig.id, (e, event, result) => {
+            console.log("Control event:: ", event, result)
+            switch (event) {
+                case "start":
+                    onLoaded();
+                    break;
+                case "error":
+                    console.error(result);
+                    removeWindow(windowConfig.id);
+                    rerender();
+                    break;
+                default:
+                    console.error("Unknown event ", event)
+            }
+        })
 
+        window.webContents.on('dom-ready', function() {
+            if (windowConfig.control) {
+                window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(controlModulePath) + ")(window.$$$require$$$," + JSON.stringify(windowConfig.id) + "," + JSON.stringify(require.resolve(windowConfig.control.script)) + "," + JSON.stringify(windowConfig.control.args) + ")");
+            } else {
+                onLoaded();
+            }
         })
     }
+
     function removeWindow(id, alreadyClosed) {
+        if (!windows[id]) {
+            return;
+        }
+        console.log("remove window", id);
+        var w = windows[id].window;
+        delete windows[id];
+        ipcMain.removeAllListeners("ORBITA__CONTROL_" + id);
         if (!alreadyClosed) {
             console.log("Close window ", id)
-            windows[id].window.close();
+            w.close();
         }
-        delete windows[id];
     }
 }
