@@ -94,7 +94,8 @@ So,  you create orbita-component with settings for controll windows and messages
             links:[{transport:"t", name:"ev",to:"event1", type:"in"}]
         })
         
-        
+    
+    Look for more examples https://github.com/arvitaly/orbita/tree/master/examples/
 
 # Tranports
 
