@@ -20,7 +20,7 @@
   "dependencies": {
     "deep-extend": "^0.4.1",
     "electron-prebuilt": "0.37.2",
-    "nanoservice": "^0.0.7"
+    "nanoservice": "^0.1.1"
   },
   "bin": {
     "orbita": "./bin-start.js"

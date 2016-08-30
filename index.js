@@ -68,7 +68,7 @@ module.exports = function (component) {
         },
         setState: function (partialState) {
             if (typeof partialState === "function") {
-                partialState = partialState(state)
+                partialState = partialState(state);
             }
             var newState = {}
             for (var k in state) {
@@ -99,13 +99,12 @@ module.exports = function (component) {
         })
     }
     function createWindow(windowConfig) {
-
+        windows[windowConfig.id] = {};
         u.appOnReady(() => {
             _createWindow(windowConfig)
         })
     }
     function _createWindow(windowConfig) {
-        console.log("createWindow", windowConfig)
         windows[windowConfig.id] = {
             id: windowConfig.id,
             window: null,
@@ -209,6 +208,7 @@ module.exports = function (component) {
     }
 
     function removeWindow(id, alreadyClosed) {
+        console.log("want remove window", id);
         if (!windows[id]) {
             return;
         }

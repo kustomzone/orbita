@@ -4,19 +4,13 @@ nanoservice.use("orbita-ipc-server", require('./../orbita-ipc-server'));
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
 describe("Orbita", () => {
     it("complex", (done) => {
-        var fixture1 = "dfgk6hu95et";
-        var fixture2 = "testfklgjdfg";
+        var fixture1 = "fixture1val";
+        var fixture2 = "fixture2val";
         var fixture3 = "fixture3val";
 
         var orbita = global['Orbita1'];
 
-        orbita.setState({
-            test: 28,
-            countWindowCall: 0,
-            fix: fixture1,
-            fixture2: fixture2,
-            fixture3: fixture3
-        });
+
 
         var countIn2Event = 0;
 
@@ -40,7 +34,6 @@ describe("Orbita", () => {
             },
             out: {
                 "out1": (cb) => {
-                    console.log("OUT OUT1")
                     cb1 = cb;
                 }
             }
@@ -48,7 +41,18 @@ describe("Orbita", () => {
                 transports: { "t1": { "type": "orbita-ipc-server", opts: { address: "addr1", orbita: orbita } } },
                 links: [{ transport: "t1", type: "out", name: "out1", to: "event2" }, { transport: "t1", type: "in", name: "in2", to: "event1" }]
             });
+
         global["ORBITASERVICE1"] = service1;
+
+
+        orbita.setState({
+            test: 28,
+            countWindowCall: 0,
+            fix: fixture1,
+            fixture2: fixture2,
+            fixture3: fixture3
+        });
+
     })
 
 })
