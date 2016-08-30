@@ -1,6 +1,6 @@
 {
   "name": "orbita",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Framework for Atom/Electron with reactive windows controller and nanoservice's support",
   "main": "index.js",
   "scripts": {
@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "deep-extend": "^0.4.1",
-    "electron-prebuilt": "0.37.2",
+    "electron-prebuilt": "0.36.0",
     "nanoservice": "^0.1.1"
   },
   "bin": {
