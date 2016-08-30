@@ -1,6 +1,6 @@
-#!/usr/bin/env node
-var electron = require("electron-prebuilt");
+#!/usr/bin/env nodevar electron = require("electron-prebuilt");
 var proc = require('child_process');
+
 var args = process.argv.slice(2);
 args.unshift(__dirname + "/bin.js");
 var child = proc.spawn(electron, args, {
