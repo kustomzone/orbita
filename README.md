@@ -57,7 +57,7 @@ So,  you create orbita-component with settings for controll windows and messages
                         //transports for nanoservice
                         transports: {
                             "tr1": {
-                                "type": "orbita-ipc-client",
+                                "type": "orbita",
                                 opts: {
                                     address: "addr1"
                                 }
@@ -81,6 +81,17 @@ So,  you create orbita-component with settings for controll windows and messages
                     }]
                 }]
             }
+        })
+        //Nanoservice in main process
+        nanoservice({
+            in:{
+                ev:(data)=>{
+                    //data from page-service for out-link out1 connected by "orbita" transport
+                }
+            }
+        },{
+            transports:{"t":{"type":"orbita",opts:{"address":"addr1"}}}
+            links:[{transport:"t", name:"ev",to:"event1", type:"in"}]
         })
         
         
