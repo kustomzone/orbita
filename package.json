@@ -1,6 +1,6 @@
 {
   "name": "orbita",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Framework for Atom/Electron with reactive windows controller and nanoservice's support",
   "main": "index.js",
   "scripts": {
@@ -19,10 +19,11 @@
   },
   "dependencies": {
     "deep-extend": "^0.4.1",
+    "electron-prebuilt": "^0.36.0",
     "nanoservice": "^0.0.7"
   },
   "bin": {
-    "orbita": "./bin.js"
+    "orbita": "./bin-start.js"
   },
   "homepage": "https://github.com/arvitaly/orbita#readme",
   "devDependencies": {

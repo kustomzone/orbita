@@ -1,4 +1,3 @@
-#! electron
 var orbita = require('./index');
 var module = process.argv[2];
 if (!module) {
