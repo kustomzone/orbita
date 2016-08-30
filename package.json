@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "electron test.js",
-    "test:bin": "orbita test-bin.js"
+    "test:bin": "orbita spec/component-bin.js"
   },
   "repository": {
     "type": "git",

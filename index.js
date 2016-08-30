@@ -4,7 +4,7 @@ var path = require('path');
 var orbitaIPCServerTransport = require('./orbita-ipc-server');
 nanoservice.use("orbita-ipc-server", orbitaIPCServerTransport);
 nanoservice.use("orbita", orbitaIPCServerTransport);
-console.log("add transport orbita")
+
 var BrowserWindow = electron.BrowserWindow;
 var app = electron.app;
 var ipcMain = electron.ipcMain;
@@ -50,6 +50,7 @@ var defaultWindowOpts = {
 }
 var gid = 0;
 module.exports = function (component) {
+
     gid++;
 
     var orbitaID = "Orbita__" + gid + parseInt(Math.random() * 1000);
@@ -91,6 +92,7 @@ module.exports = function (component) {
     orbitaIPCServerTransport.orbita = orb;
 
     function rerender() {
+
         var needWindows = component.render.apply(orb, [state]);
         for (var id in windows) {
             if (needWindows.filter((w) => {
