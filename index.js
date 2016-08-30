@@ -164,6 +164,13 @@ module.exports = function (component) {
                         })
                     }
 
+                    //Add server for every orbita transport
+                    for (var tn in serviceConfig.transports) {
+                        if (serviceConfig.transports[tn].type == "orbita") {
+                            orbitaIPCServerTransport(serviceConfig.transports[tn].opts);
+                        }
+                    }
+
                     var serviceCModulePath = serviceConfig.module;
                     var realServiceModulePath;
                     if (serviceCModulePath.substr(0, 1) !== "/" && serviceCModulePath.indexOf(":") === -1) {
