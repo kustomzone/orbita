@@ -1,7 +1,7 @@
 var Orbita = require('./../index')
 var nanoservice = require('nanoservice');
 var component = require('./component')
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
 describe("Orbita", () => {
     it("complex", (done) => {
         var fixture1 = "fixture1val";

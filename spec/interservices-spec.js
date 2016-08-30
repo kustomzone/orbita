@@ -1,5 +1,5 @@
 var orbita = require('./../index');
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
 describe("Inter service communication", () => {
     it("simple", (done) => {
         var orbTransport = { type: "orbita", opts: { address: "addr1" } };
