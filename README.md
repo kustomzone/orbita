@@ -14,7 +14,7 @@ So,  you create orbita-component with settings for controll windows and messages
 # Install
 
     //First, install orbita, now works with 0.37.2 version of Electron
-    npm install orbita@1.4.1 -g
+    npm install orbita@1.4.2 -g
     //start app, if not set script, orbita will find main module in package.json or just take index.js
     orbita app.js
 
