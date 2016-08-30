@@ -1,6 +1,7 @@
 var electron = require('electron');
 var ipcMain = electron.ipcMain;
-module.exports = (opts) => {
+
+var tr = (opts) => {
     var callbacks = {
 
     }
@@ -15,8 +16,10 @@ module.exports = (opts) => {
         },
         out: (name) => {
             return function (data) {
-                opts.orbita.send(opts.address, name, data);
+                tr.orbita.send(opts.address, name, data);
             }
         }
     }
 }
+tr.orbita = null;
+module.exports = tr

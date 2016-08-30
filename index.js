@@ -1,7 +1,10 @@
 var electron = require('electron');
 var nanoservice = require('nanoservice');
 var path = require('path');
-nanoservice.use("orbita-ipc-server", require('./orbita-ipc-server'));
+var orbitaIPCServerTransport = require('./orbita-ipc-server');
+nanoservice.use("orbita-ipc-server", orbitaIPCServerTransport);
+nanoservice.use("orbita", orbitaIPCServerTransport);
+console.log("add transport orbita")
 var BrowserWindow = electron.BrowserWindow;
 var app = electron.app;
 var ipcMain = electron.ipcMain;
@@ -42,7 +45,7 @@ var defaultWindowOpts = {
     },
     userAgent: "Mozilla/5.0 (Windows NT 6.4; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2225.0 Safari/537.36",
     transports: {
-        'orbita-ipc-client': require.resolve('./orbita-ipc-client')
+        'orbita': require.resolve('./orbita-ipc-client')
     }
 }
 var gid = 0;
@@ -83,6 +86,10 @@ module.exports = function (component) {
             }
         }
     }
+
+    //Set orbita to Orbita transport
+    orbitaIPCServerTransport.orbita = orb;
+
     function rerender() {
         var needWindows = component.render.apply(orb, [state]);
         for (var id in windows) {
@@ -139,7 +146,7 @@ module.exports = function (component) {
                     serviceConfig.links = serviceConfig.links || [];
                     serviceConfig.transports = serviceConfig.transports || {};
                     if (serviceConfig.on) {
-                        serviceConfig.transports["____ORBITA_ON"] = { type: "orbita-ipc-client", opts: { address: "____ORBITA_ON" + windowConfig.id } }
+                        serviceConfig.transports["____ORBITA_ON"] = { type: "orbita", opts: { address: "____ORBITA_ON" + windowConfig.id } }
 
                         var sLinks = [];
                         var sIns = {};
@@ -155,9 +162,7 @@ module.exports = function (component) {
                             transports: { "t": { type: "orbita-ipc-server", opts: { address: "____ORBITA_ON" + windowConfig.id } } },
                             links: sLinks
                         })
-
                     }
-
 
                     var serviceCModulePath = serviceConfig.module;
                     var realServiceModulePath;
@@ -222,5 +227,7 @@ module.exports = function (component) {
             w.close();
         }
     }
+
     return orb;
 }
+

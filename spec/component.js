@@ -28,7 +28,7 @@ module.exports = {
                 },
                 transports: {
                     "tr1": {
-                        "type": "orbita-ipc-client",
+                        "type": "orbita",
                         opts: {
                             address: "addr1"
                         }

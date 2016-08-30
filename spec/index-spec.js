@@ -1,6 +1,4 @@
 var nanoservice = require('nanoservice');
-nanoservice.use("orbita-ipc-server", require('./../orbita-ipc-server'));
-
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
 describe("Orbita", () => {
     it("complex", (done) => {
@@ -38,7 +36,7 @@ describe("Orbita", () => {
                 }
             }
         }, {
-                transports: { "t1": { "type": "orbita-ipc-server", opts: { address: "addr1", orbita: orbita } } },
+                transports: { "t1": { "type": "orbita", opts: { address: "addr1" } } },
                 links: [{ transport: "t1", type: "out", name: "out1", to: "event2" }, { transport: "t1", type: "in", name: "in2", to: "event1" }]
             });
 
