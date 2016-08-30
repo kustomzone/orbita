@@ -119,6 +119,11 @@ module.exports = function (component) {
             config: windowConfig
         }
         windowOpts = deepExtend(windowOpts, windowConfig.opts);
+
+        for (var trName in windowOpts.transports) {
+            windowOpts.transports[trName] = resolveModule(windowOpts.transports[trName]);
+        }
+
         var window = new BrowserWindow({ width: windowOpts.width, height: windowOpts.height, webPreferences: windowOpts.webPreferences });
         windows[windowConfig.id].window = window;
 
@@ -174,25 +179,7 @@ module.exports = function (component) {
                         }
                     }
 
-                    var serviceCModulePath = serviceConfig.module;
-                    var realServiceModulePath;
-                    if (serviceCModulePath.substr(0, 1) !== "/" && serviceCModulePath.indexOf(":") === -1) {
-                        if (serviceCModulePath.substr(0, 1) === ".") {
-                            realServiceModulePath = path.resolve(process.cwd() + serviceCModulePath);
-                        } else {
-                            realServiceModulePath = path.resolve(process.cwd() + "/node_modules/" + serviceCModulePath);
-                        }
-                    } else {
-                        realServiceModulePath = serviceCModulePath;
-                    }
-                    try {
-                        realServiceModulePath = require.resolve(realServiceModulePath);
-                    }
-                    catch (e) {
-                        throw new Error("Invalid service module path " + serviceCModulePath)
-                    }
-
-                    window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(transportsModulePath) + ")(window.$$$require$$$," + JSON.stringify(windowOpts.transports) + "); window.$$$require$$$(" + JSON.stringify(serviceModulePath) + ")(window.$$$require$$$," + JSON.stringify(realServiceModulePath) + ", " + JSON.stringify(serviceConfig.args) + ", " + JSON.stringify(serviceConfig.transports) + ", " + JSON.stringify(serviceConfig.links) + ");")
+                    window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(transportsModulePath) + ")(window.$$$require$$$," + JSON.stringify(windowOpts.transports) + "); window.$$$require$$$(" + JSON.stringify(serviceModulePath) + ")(window.$$$require$$$," + JSON.stringify(resolveModule(serviceConfig.module)) + ", " + JSON.stringify(serviceConfig.args) + ", " + JSON.stringify(serviceConfig.transports) + ", " + JSON.stringify(serviceConfig.links) + ");")
                 })
             }
         }
@@ -220,6 +207,26 @@ module.exports = function (component) {
                 onLoaded();
             }
         })
+    }
+
+    function resolveModule(serviceCModulePath) {
+        var realServiceModulePath
+        if (serviceCModulePath.substr(0, 1) !== "/" && serviceCModulePath.indexOf(":") === -1) {
+            if (serviceCModulePath.substr(0, 1) === ".") {
+                realServiceModulePath = path.resolve(process.cwd() + serviceCModulePath);
+            } else {
+                realServiceModulePath = path.resolve(process.cwd() + "/node_modules/" + serviceCModulePath);
+            }
+        } else {
+            realServiceModulePath = serviceCModulePath;
+        }
+        try {
+            realServiceModulePath = require.resolve(realServiceModulePath);
+        }
+        catch (e) {
+            throw new Error("Invalid service module path " + serviceCModulePath)
+        }
+        return realServiceModulePath;
     }
 
     function removeWindow(id, alreadyClosed) {
