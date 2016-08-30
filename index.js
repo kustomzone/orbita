@@ -207,7 +207,7 @@ module.exports = function (component) {
                 window.webContents.executeJavaScript("var a = 'unknown error with preload require'");
                 setTimeout(() => {
                     onLoaded();
-                }, 100)
+                }, 200)
             }
         })
     }
