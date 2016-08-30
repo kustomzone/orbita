@@ -5,7 +5,7 @@ module.exports = (opts) => {
     }
     console.log("orbita ipc client", opts)
     ipcRenderer.on(opts.address, (event, name, data) => {
-        console.log("event", event, name, data, callbacks);
+        console.log("event", name, data);
         if (callbacks[name]) {
             callbacks[name](data);
         }
@@ -13,7 +13,7 @@ module.exports = (opts) => {
 
     return {
         in: function (name, callback) {
-            console.log("orbita in ", opts.address, name)
+            console.log("link in ", opts.address, name)
             callbacks[name] = callback;
         },
         out: function (name) {

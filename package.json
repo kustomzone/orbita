@@ -1,10 +1,10 @@
 {
   "name": "orbita",
-  "version": "1.4.8",
+  "version": "1.4.9",
   "description": "Framework for Atom/Electron with reactive windows controller and nanoservice's support",
   "main": "index.js",
   "scripts": {
-    "test": "electron test.js",
+    "test": "electron test.js spec/index-spec.js && electron test.js spec/interservices-spec.js",
     "test:bin": "orbita spec/component-bin.js"
   },
   "repository": {

@@ -65,7 +65,6 @@ module.exports = function (component) {
     var orb = {
         id: orbitaID,
         send: function (address, event, data) {
-            console.log("send", address, event, data)
             for (var id in windows) {
                 windows[id].window.webContents.send(address, event, data);
             }
@@ -128,11 +127,13 @@ module.exports = function (component) {
 
         window.openDevTools();
         window.webContents.on('did-fail-load', function () {
+            console.log("did-fail-load ", windowConfig.id)
             removeWindow(windowConfig.id);
             rerender();
         });
 
         window.webContents.on('crashed', function () {
+            console.log("crashed ", windowConfig.id)
             removeWindow(windowConfig.id);
             rerender();
         })
@@ -169,7 +170,7 @@ module.exports = function (component) {
                     //Add server for every orbita transport
                     for (var tn in serviceConfig.transports) {
                         if (serviceConfig.transports[tn].type == "orbita") {
-                            orbitaIPCServerTransport(serviceConfig.transports[tn].opts);
+                            orbitaIPCServerTransport({ address: serviceConfig.transports[tn].opts.address, always: true });
                         }
                     }
 
