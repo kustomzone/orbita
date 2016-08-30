@@ -204,7 +204,10 @@ module.exports = function (component) {
             if (windowConfig.control) {
                 window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(controlModulePath) + ")(window.$$$require$$$," + JSON.stringify(windowConfig.id) + "," + JSON.stringify(require.resolve(windowConfig.control.script)) + "," + JSON.stringify(windowConfig.control.args) + ")");
             } else {
-                onLoaded();
+                window.webContents.executeJavaScript("var a = 'unknown error with preload require'");
+                setTimeout(() => {
+                    onLoaded();
+                }, 100)
             }
         })
     }
