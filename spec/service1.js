@@ -10,7 +10,14 @@ module.exports = (args) => {
             }
         },
         out: {
+            firstOut: (cb) => {
+                console.log("SUBSCRIBE firstOut")
+                setTimeout(() => {
+                    cb();
+                }, 100)
+            },
             out1: (cb) => {
+                console.log("SUBSCRIBE out1")
                 callback = cb;
             }
         }

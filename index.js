@@ -1,4 +1,6 @@
 var electron = require('electron');
+var nanoservice = require('nanoservice');
+nanoservice.use("orbita-ipc-server", require('./orbita-ipc-server'));
 var BrowserWindow = electron.BrowserWindow;
 var app = electron.app;
 var ipcMain = electron.ipcMain;
@@ -6,18 +8,18 @@ var transportsModulePath = require.resolve('./transports');
 var serviceModulePath = require.resolve('./service');
 var controlModulePath = require.resolve('./control');
 
-app.on('window-all-closed', function() {
+app.on('window-all-closed', function () {
     app.quit();
 });
 
 var u = {
-    appOnReady: function(cb) {
+    appOnReady: function (cb) {
         appOnReadyListeners.push(cb);
     }
 }
 
 app.on('ready', () => {
-    u.appOnReady = function(cb) {
+    u.appOnReady = function (cb) {
         cb();
     }
     appOnReadyListeners.map((cb) => {
@@ -43,7 +45,7 @@ var defaultWindowOpts = {
     }
 }
 var gid = 0;
-module.exports = function(component) {
+module.exports = function (component) {
     gid++;
 
     var orbitaID = "Orbita__" + gid + parseInt(Math.random() * 1000);
@@ -55,15 +57,15 @@ module.exports = function(component) {
         rerender();
     });
 
-    return {
+    var orb = {
         id: orbitaID,
-        send: function(address, event, data) {
+        send: function (address, event, data) {
             console.log("send", address, event, data)
             for (var id in windows) {
                 windows[id].window.webContents.send(address, event, data);
             }
         },
-        setState: function(partialState) {
+        setState: function (partialState) {
             var newState = {}
             for (var k in state) {
                 newState[k] = state[k]
@@ -78,7 +80,7 @@ module.exports = function(component) {
         }
     }
     function rerender() {
-        var needWindows = component.render.apply(undefined, [state]);
+        var needWindows = component.render.apply(orb, [state]);
         for (var id in windows) {
             if (needWindows.filter((w) => {
                 return w.id == id;
@@ -113,17 +115,17 @@ module.exports = function(component) {
         window.loadURL(windowConfig.url, { userAgent: windowOpts.userAgent });
 
         window.openDevTools();
-        window.webContents.on('did-fail-load', function() {
+        window.webContents.on('did-fail-load', function () {
             removeWindow(windowConfig.id);
             rerender();
         });
 
-        window.webContents.on('crashed', function() {
+        window.webContents.on('crashed', function () {
             removeWindow(windowConfig.id);
             rerender();
         })
 
-        window.on('close', function() {
+        window.on('close', function () {
             removeWindow(windowConfig.id, true);
             rerender();
         });
@@ -131,6 +133,27 @@ module.exports = function(component) {
         var onLoaded = () => {
             if (windowConfig.services) {
                 windowConfig.services.map((serviceConfig) => {
+                    serviceConfig.links = serviceConfig.links || [];
+                    serviceConfig.transports = serviceConfig.transports || {};
+                    if (serviceConfig.on) {
+                        serviceConfig.transports["____ORBITA_ON"] = { type: "orbita-ipc-client", opts: { address: "____ORBITA_ON" + windowConfig.id } }
+
+                        var sLinks = [];
+                        var sIns = {};
+                        for (var outLinkName in serviceConfig.on) {
+                            serviceConfig.links.push({ transport: "____ORBITA_ON", name: outLinkName, to: outLinkName, type: "out" })
+                            sIns[outLinkName] = (function (callback, data) {
+                                callback.apply(this, [data]);
+                            }).bind(orb, serviceConfig.on[outLinkName]);
+                            sLinks.push({ transport: "t", name: outLinkName, to: outLinkName, type: "in" })
+                        }
+
+                        nanoservice({ in: sIns }, {
+                            transports: { "t": { type: "orbita-ipc-server", opts: { address: "____ORBITA_ON" + windowConfig.id } } },
+                            links: sLinks
+                        })
+
+                    }
                     window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(transportsModulePath) + ")(window.$$$require$$$," + JSON.stringify(windowOpts.transports) + "); window.$$$require$$$(" + JSON.stringify(serviceModulePath) + ")(window.$$$require$$$," + JSON.stringify(require.resolve(serviceConfig.module)) + ", " + JSON.stringify(serviceConfig.args) + ", " + JSON.stringify(serviceConfig.transports) + ", " + JSON.stringify(serviceConfig.links) + ");")
                 })
             }
@@ -152,7 +175,7 @@ module.exports = function(component) {
             }
         })
 
-        window.webContents.on('dom-ready', function() {
+        window.webContents.on('dom-ready', function () {
             if (windowConfig.control) {
                 window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(controlModulePath) + ")(window.$$$require$$$," + JSON.stringify(windowConfig.id) + "," + JSON.stringify(require.resolve(windowConfig.control.script)) + "," + JSON.stringify(windowConfig.control.args) + ")");
             } else {
@@ -169,9 +192,11 @@ module.exports = function(component) {
         var w = windows[id].window;
         delete windows[id];
         ipcMain.removeAllListeners("ORBITA__CONTROL_" + id);
+        ipcMain.removeAllListeners("____ORBITA_ON" + id);
         if (!alreadyClosed) {
             console.log("Close window ", id)
             w.close();
         }
     }
+    return orb;
 }

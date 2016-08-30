@@ -49,6 +49,13 @@ So,  you create orbita-component with settings for controll windows and messages
                         module: __dirname + "/service1.js",
                         //args for creating service
                         args: state.fix + state.test,
+                        //internal subscribe to service
+                        on:{
+                            serviceOutEvent: function(){
+                                //Access to `orbita` and change state
+                                this.setState({ test: fixture2 });
+                            }
+                        },
                         //transports for nanoservice
                         transports: {
                             "tr1": {
@@ -77,35 +84,8 @@ So,  you create orbita-component with settings for controll windows and messages
                 }]
             }
         })
-        //Change state
-        orbita1.setState({ test: fixture2 });
-        //......
         
-        //create nanoservice in main process
-        var service1 = nanoservice({
-                    in: {
-                        "in1": (args) => {
-                            setTimeout(() => {
-                                cb1(args + fixture1);
-                            }, 100);
-                        },
-                        "in2": (args) => {
-                            //!!!Args collected through all events = (fixture2 + fixture1 + fixture1 + fixture2);
-                            
-                        }
-                    },
-                    out: {
-                        "out1": (cb) => {
-                            cb1 = cb;
-                        }
-                    }
-                }, {
-                //use orbita transport
-                        transports: { "t1": { "type": "orbita-ipc-server", opts: { address: "addr1", orbita: orbita } } },
-                        links: [{ transport: "t1", type: "out", name: "out1", to: "event2" }, { transport: "t1", type: "in", name: "in2", to: "event1" }]
-                    });
-                //Start messaging
-                service1.emit("in1", fixture2);
+        
 
 # Tranports
 
