@@ -1,5 +1,6 @@
 var electron = require('electron');
 var nanoservice = require('nanoservice');
+var path = require('path');
 nanoservice.use("orbita-ipc-server", require('./orbita-ipc-server'));
 var BrowserWindow = electron.BrowserWindow;
 var app = electron.app;
@@ -66,6 +67,9 @@ module.exports = function (component) {
             }
         },
         setState: function (partialState) {
+            if (typeof partialState === "function") {
+                partialState = partialState(state)
+            }
             var newState = {}
             for (var k in state) {
                 newState[k] = state[k]
@@ -154,7 +158,27 @@ module.exports = function (component) {
                         })
 
                     }
-                    window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(transportsModulePath) + ")(window.$$$require$$$," + JSON.stringify(windowOpts.transports) + "); window.$$$require$$$(" + JSON.stringify(serviceModulePath) + ")(window.$$$require$$$," + JSON.stringify(require.resolve(serviceConfig.module)) + ", " + JSON.stringify(serviceConfig.args) + ", " + JSON.stringify(serviceConfig.transports) + ", " + JSON.stringify(serviceConfig.links) + ");")
+
+
+                    var serviceCModulePath = serviceConfig.module;
+                    var realServiceModulePath;
+                    if (serviceCModulePath.substr(0, 1) !== "/" && serviceCModulePath.indexOf(":") === -1) {
+                        if (serviceCModulePath.substr(0, 1) === ".") {
+                            realServiceModulePath = path.resolve(process.cwd() + serviceCModulePath);
+                        } else {
+                            realServiceModulePath = path.resolve(process.cwd() + "/node_modules/" + serviceCModulePath);
+                        }
+                    } else {
+                        realServiceModulePath = serviceCModulePath;
+                    }
+                    try {
+                        realServiceModulePath = require.resolve(realServiceModulePath);
+                    }
+                    catch (e) {
+                        throw new Error("Invalid service module path " + serviceCModulePath)
+                    }
+
+                    window.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(transportsModulePath) + ")(window.$$$require$$$," + JSON.stringify(windowOpts.transports) + "); window.$$$require$$$(" + JSON.stringify(serviceModulePath) + ")(window.$$$require$$$," + JSON.stringify(realServiceModulePath) + ", " + JSON.stringify(serviceConfig.args) + ", " + JSON.stringify(serviceConfig.transports) + ", " + JSON.stringify(serviceConfig.links) + ");")
                 })
             }
         }
