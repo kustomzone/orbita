@@ -2,19 +2,17 @@ var nanoservice = require('nanoservice');
 nanoservice.use("orbita-ipc-server", require('./../orbita-ipc-server'));
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
-describe("Windows controller", () => {
-    it("orbita", (done) => {
+describe("Orbita", () => {
+    it("complex", (done) => {
         var fixture1 = "dfgk6hu95et";
         var fixture2 = "testfklgjdfg";
         var fixture3 = "fixture3val";
-
-        var countWindowCall = 0;
 
         var orbita = global['Orbita1'];
 
         orbita.setState({
             test: 28,
-            countWindowCall: countWindowCall,
+            countWindowCall: 0,
             fix: fixture1,
             fixture2: fixture2,
             fixture3: fixture3
