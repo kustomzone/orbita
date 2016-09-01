@@ -8,9 +8,8 @@ addons:
       - xvfb
 install:
   - npm install
-  - npm install orbita -g  
+  - cd bin-test && npm install ./.. && npm install
   - export DISPLAY=':99.0'
   - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 script:
   - npm test
-  - npm run test:bin

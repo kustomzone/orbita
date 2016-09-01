@@ -1,4 +1,4 @@
-var orbita = require('./index');
+var orbita = require('.');
 var module = process.argv[2];
 if (!module) {
     var pp = process.cwd() + "/package.json";
@@ -23,7 +23,8 @@ if (!module) {
 console.log("Orbita start with module ", module);
 var component = require(module);
 Promise.resolve(typeof (component) === "function" ? component() : component).then((component) => {
-    orbita.app = orbita(component);
+    orbita.runAsGlobal = true;
+    orbita(component);
 }).catch((err) => {
     console.error(err);
 })

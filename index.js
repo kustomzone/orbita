@@ -49,7 +49,9 @@ var defaultWindowOpts = {
     }
 }
 var gid = 0;
-module.exports = function (component) {
+
+
+var orbitaModule = function (component) {
 
     gid++;
 
@@ -86,6 +88,15 @@ module.exports = function (component) {
             }
         }
     }
+    //FOR RUN WITH CLI
+    if (orbitaModule.runAsGlobal) {
+        var onReadyCallback = global.orbita.onReadyCallback;
+        global.orbita = orb;
+        if (onReadyCallback) {
+            u.appOnReady(onReadyCallback);
+        }
+    }
+
 
     //Set orbita to Orbita transport
     orbitaIPCServerTransport.orbita = orb;
@@ -250,4 +261,14 @@ module.exports = function (component) {
 
     return orb;
 }
-
+global.orbita = {
+    onReadyCallback: null,
+    onReady: (cb) => {
+        if (global.orbita.setState) {
+            cb();
+            return;
+        }
+        global.orbita.onReadyCallback = cb;
+    }
+}
+module.exports = orbitaModule;
