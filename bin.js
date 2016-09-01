@@ -23,7 +23,7 @@ if (!module) {
 console.log("Orbita start with module ", module);
 var component = require(module);
 Promise.resolve(typeof (component) === "function" ? component() : component).then((component) => {
-    orbita(component);
+    orbita.app = orbita(component);
 }).catch((err) => {
     console.error(err);
 })
