@@ -1,6 +1,9 @@
 # Orbita: framework for Atom/Electron with reactive windows controller and nanoservice's support
-[![Build Status](https://travis-ci.org/arvitaly/orbita.svg?branch=master)](https://travis-ci.org/arvitaly/orbita)
+
 [![npm version](https://badge.fury.io/js/orbita.svg)](https://badge.fury.io/js/orbita)
+[![Build Status](https://travis-ci.org/arvitaly/orbita.svg?branch=master)](https://travis-ci.org/arvitaly/orbita)
+[![Coverage Status](https://coveralls.io/repos/github/arvitaly/orbita/badge.svg?branch=master)](https://coveralls.io/github/arvitaly/orbita?branch=master)
+
 # What is it?
 
 Orbita is component, like React, but for electron windows. It has `state` and method `render`. You can change state by method `setState` and if state was changed, orbita will run `render`. 
