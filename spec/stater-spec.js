@@ -11,7 +11,7 @@ describe("Stater", () => {
     })
     it("when initial state was null, should call onChange", () => {
         stater(null, onChange)(fixture1);
-        expect(onChange.calls.count()).toBe(1);
+        expect(onChange.calls.allArgs()).toEqual([[fixture1]]);
     })
     it("when initial state and new state equal, should not call onChange", () => {
         stater(fixture1, onChange)(fixture1);
@@ -20,8 +20,10 @@ describe("Stater", () => {
     it("when initial state is plain object, new state should extend it", () => {
         var s = stater(fixtureObj1, onChange);
         s({ test2: fixture3 });
+        expect(onChange.calls.allArgs()).toEqual([[{ test: fixture2, test2: fixture3 }]]);
+        onChange.calls.reset();
         s({ test: fixture2, test2: fixture3 });
-        expect(onChange.calls.count()).toBe(1);
+        expect(onChange.calls.count()).toBe(0);
     })
     it("when partial state is function, then call it and set result as partial state ", () => {
         var partialState = jasmine.createSpy();
@@ -30,6 +32,6 @@ describe("Stater", () => {
         s(partialState);
         partialState.and.returnValue(fixture2)
         s(partialState);
-        expect(onChange.calls.count()).toBe(1);
+        expect(onChange.calls.allArgs()).toEqual([[fixture2]])
     })
 })

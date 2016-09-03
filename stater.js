@@ -11,7 +11,7 @@ module.exports = (initialState, onChange) => {
         }
         if (!_.isEqual(partialState, state)) {
             state = partialState;
-            onChange();
+            onChange(state);
         }
     }
 }
