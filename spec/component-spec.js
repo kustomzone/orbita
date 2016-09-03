@@ -2,7 +2,7 @@ var mock = require('mock-require');
 var fixture1 = "fix1";
 describe("Component", () => {
     var componentModule, electronApp, stater, staterModule, component, rendererModule, renderer;
-    beforeEach(() => {
+    beforeAll(() => {
         //create electron mock
         electronApp = jasmine.createSpyObj('app', ['on']);
         mock('electron', { app: electronApp });
@@ -16,31 +16,45 @@ describe("Component", () => {
         renderer = jasmine.createSpy();
         rendererModule.and.returnValue(renderer);
         mock('./../renderer', rendererModule);
-        //create component class        
+    })
+    beforeEach(() => {
+        //create component class
         componentModule = require('./../component');
         component = componentModule();
     })
-    it("when created, should create stater with assigned state", () => {
-        component({
-            state: fixture1
-        });
-        expect(staterModule.calls.count()).toBe(1);
-        expect(staterModule.calls.argsFor(0)[0]).toBe(fixture1);
-        expect(staterModule.calls.argsFor(0)[1]).toEqual(jasmine.any(Function));
-    })
-    xit("when created, should create renderer with right opts", () => {
+    it("when created, should create renderer with right opts", () => {
         component();
         expect(rendererModule.calls.count()).toBe(1);
     })
-    xit("when call setState, should run stater", () => {
+    it("when created, should create stater with assigned state", () => {
+        component({ state: fixture1 });
+        expect(staterModule.calls.count()).toBe(1);
+        expect(staterModule.calls.argsFor(0)[0]).toBe(fixture1);
+        expect(staterModule.calls.argsFor(0)[1]).toEqual(jasmine.any(Function));
+        expect(rendererModule.calls.count()).toBe(1);
+    })
+    it("when call setState, should run stater", () => {
         var component1 = component();
         component1.setState(fixture1);
         expect(stater.calls.count()).toBe(1);
+    })
+    it("when state was changed, should run render and call renderer with result", () => {
+        var render = jasmine.createSpy();
+        component({ render: render });
+        render.and.returnValue(fixture1);
+        staterModule.calls.argsFor(0)[1]();
+        expect(renderer.calls.allArgs()).toEqual([[fixture1]]);
     })
     it("when created, should wait for electron ready, and start first render", () => {
 
     })
     afterEach(() => {
-        mock.stopAll()
+        staterModule.calls.reset();
+        stater.calls.reset();
+        rendererModule.calls.reset();
+        renderer.calls.reset();
+    })
+    afterAll(() => {
+        mock.stopAll();
     })
 })

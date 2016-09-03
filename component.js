@@ -18,7 +18,7 @@ module.exports = () => {
         componentConfig = _.extend({
             state: null
         }, componentConfig)
-        //Create renderer///////        
+        //Create renderer///////
         var renderer = Renderer();
         ////////////////////////
         ////Create stater///////
