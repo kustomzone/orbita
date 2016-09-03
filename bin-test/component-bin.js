@@ -1,8 +1,10 @@
+
 var call = 0;
-module.exports = () => {
+module.exports = () => {    
     return {
         render: (state) => {
-
+            var nanoservice = require('nanoservice');
+            console.log("orbita", nanoservice.transports)
             call++;
             if (call == 2) {
                 console.log(JSON.stringify(state));
