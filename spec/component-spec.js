@@ -32,7 +32,7 @@ describe("Component", () => {
     })
     it("when created, should create renderer with right opts", () => {
         component();
-        expect(rendererModule.calls.allArgs()).toEqual([[jasmine.any(Object)]]);
+        expect(rendererModule.calls.allArgs()).toEqual([[]]);
     })
     it("when created, should create stater with assigned state", () => {
         component({ state: fixture1, render: render });

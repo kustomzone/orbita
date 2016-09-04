@@ -1,12 +1,13 @@
 var _ = require('lodash');
-function createWindow(windowConfig, windowsOpts) {
+var defaultWindowOpts = require('./default-window-opts');
+function createWindow(windowConfig) {
     var window = {
         id: windowConfig.id,
         electronWindow: null
     }
     var opts = _.extend({
         transports: {}
-    }, windowConfig.opts, windowsOpts);
+    }, windowConfig.opts, defaultWindowOpts);
 
     return window;
 }
@@ -14,6 +15,6 @@ function removeWindow() {
 
 }
 module.exports = {
-    createWindow: createWindow,
-    removeWindow: removeWindow
+    create: createWindow,
+    remove: removeWindow
 }
