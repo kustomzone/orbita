@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var electronApp = require('electron').app;
 var Stater = require('./stater');
 var Renderer = require('./renderer');
 module.exports = () => {
@@ -19,12 +20,24 @@ module.exports = () => {
             state: null
         }, componentConfig)
         //Create renderer///////
-        var renderer = Renderer();
-        ////////////////////////
-        ////Create stater///////
+        var renderer = Renderer(defaultWindowOpts);
+        ////Create stater///////        
+        var saver = { onChangeState: null };
         var stater = Stater(componentConfig.state, (state) => {
-            renderer(componentConfig.render(state))
-        })
+            console.log(saver);
+            if (saver.onChangeState) {
+                saver.onChangeState(state);
+            }
+        });
+        //Subscribe to electron app ready        
+        electronApp.on('ready', () => {
+            
+            saver.onChangeState = (state) => {
+                renderer(componentConfig.render(state));
+            }
+            console.log("saver2", saver);
+            saver.onChangeState(stater.state);
+        });
         return {
             setState: stater
         }

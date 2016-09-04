@@ -13,6 +13,11 @@ describe("Stater", () => {
         stater(null, onChange)(fixture1);
         expect(onChange.calls.allArgs()).toEqual([[fixture1]]);
     })
+    it("when state setted, state getter should be set", () => {
+        var stater1 = stater(fixture1, onChange)
+        stater1(fixture2);
+        expect(stater1.state).toBe(fixture2);
+    })
     it("when initial state and new state equal, should not call onChange", () => {
         stater(fixture1, onChange)(fixture1);
         expect(onChange.calls.count()).toBe(0);

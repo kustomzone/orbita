@@ -1,17 +1,18 @@
 var _ = require('lodash');
-module.exports = (initialState, onChange) => {
-    var state = _.clone(initialState);
-    return (partialState) => {
+module.exports = (initialState, onChange) => {    
+    var stater = (partialState) => {
         if (_.isFunction(partialState)) {
-            partialState = partialState(state);
+            partialState = partialState(stater.state);
         }
         partialState = _.clone(partialState);
-        if (_.isPlainObject(partialState) && _.isPlainObject(state)) {
-            partialState = _.extend({}, state, partialState);
+        if (_.isPlainObject(partialState) && _.isPlainObject(stater.state)) {
+            partialState = _.extend({}, stater.state, partialState);
         }
-        if (!_.isEqual(partialState, state)) {
-            state = partialState;
-            onChange(state);
+        if (!_.isEqual(partialState, stater.state)) {
+            stater.state = partialState;
+            onChange(stater.state);
         }
     }
+    stater.state = _.clone(initialState);
+    return stater;
 }
