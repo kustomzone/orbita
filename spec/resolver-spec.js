@@ -1,4 +1,4 @@
-var mock = require('mock-require');
+var mock = require('mock2');
 var fixture1 = "path1";
 var fixture2 = "path2";
 var fixture3 = "path3";
@@ -12,8 +12,9 @@ describe("Resolve module path", () => {
             resolve: pathResolve
         }
         requireResolve = jasmine.createSpy();
-        mock('path', path);
-        resolve = require('./../resolver')(fixture1, requireResolve);
+        resolve = mock.require('./../resolver',{
+            'path': path
+        })(fixture1, requireResolve);
     })
     it("when module path not exists should throw error with assigned path", () => {
         requireResolve.and.throwError("");
@@ -42,8 +43,5 @@ describe("Resolve module path", () => {
     afterEach(() => {
         pathResolve.calls.reset();
         requireResolve.calls.reset();
-    })
-    afterAll(() => {
-        mock.stopAll();
     })
 })

@@ -1,4 +1,4 @@
-var mock = require('mock-require');
+var mock = require('mock2');
 var fixture1 = "fix1";
 var fixture2 = "fix2";
 var fixture3 = "fix3";
@@ -7,20 +7,21 @@ describe("Component", () => {
     beforeAll(() => {
         //create electron mock
         electronApp = jasmine.createSpyObj('app', ['on']);
-        mock('electron', { app: electronApp });
         //Create stater mock
         staterModule = jasmine.createSpy();
         stater = jasmine.createSpy();
         staterModule.and.returnValue(stater);
-        mock('./../stater', staterModule);
         //create renderer mock
         rendererModule = jasmine.createSpy();
         renderer = jasmine.createSpy();
         rendererModule.and.returnValue(renderer);
-        mock('./../renderer', rendererModule);
         //component render spy
         render = jasmine.createSpy();
-        componentModule = require('./../component');
+        componentModule = mock.require('./../component',{
+            './../renderer': rendererModule,
+            './../stater': staterModule,
+            'electron': { app: electronApp }
+        });
     })
     beforeEach(() => {
         //create component class        
@@ -64,8 +65,5 @@ describe("Component", () => {
         stater.calls.reset();
         rendererModule.calls.reset();
         renderer.calls.reset();
-    })
-    afterAll(() => {
-        mock.stopAll();
     })
 })

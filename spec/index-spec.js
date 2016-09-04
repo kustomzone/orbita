@@ -1,17 +1,18 @@
-var mock = require('mock-require');
+var mock = require('mock2');
 var fixture1 = "fix1";
-describe("Orbita module", () => {
+describe("Orbita module Index", () => {
     var electronApp;
     var orbitaModule;
     var component;
     beforeAll(() => {
         electronApp = jasmine.createSpyObj('app', ['on', 'quit']);
         component = jasmine.createSpy();
-        mock('electron', {
-            app: electronApp
+        orbitaModule = mock.require('./../index', {
+            './../component': component,
+            'electron': {
+                app: electronApp
+            }
         });
-        mock('./../component', component);
-        orbitaModule = require('./../index');
     })
     it("when module loaded, should created component", () => {
         component.and.returnValue(fixture1)
@@ -25,8 +26,5 @@ describe("Orbita module", () => {
         expect(electronApp.on.calls.argsFor(0)[0]).toBe("window-all-closed");
         electronApp.on.calls.argsFor(0)[1]();
         expect(electronApp.quit.calls.count()).toBe(1);
-    })
-    afterAll(() => {
-        mock.stopAll();
     })
 })
