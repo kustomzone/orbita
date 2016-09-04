@@ -1,6 +1,7 @@
 var mock = require('mock-require');
 var fixture1 = "fix1";
 var fixture2 = "fix2";
+var fixture3 = "fix3";
 describe("Component", () => {
     var componentModule, electronApp, stater, staterModule, component, rendererModule, renderer, render;
     beforeAll(() => {
@@ -19,10 +20,10 @@ describe("Component", () => {
         mock('./../renderer', rendererModule);
         //component render spy
         render = jasmine.createSpy();
+        componentModule = require('./../component');
     })
     beforeEach(() => {
-        //create component class
-        componentModule = require('./../component');
+        //create component class        
         component = componentModule();
     })
     it("when created, should subscribe for electron ready", () => {
@@ -46,20 +47,16 @@ describe("Component", () => {
         expect(stater.calls.count()).toBe(1);
     })
     it("when state was changed and electron ready, should run render two times and call renderer with result", () => {
-        component({ render: render, state: fixture2 });
+        component({ render: render, state: fixture3 });
         render.and.returnValue(fixture1);
-        staterModule.calls.argsFor(0)[1]();
         stater.state = fixture2;
         electronApp.on.calls.argsFor(0)[1]();
-        expect(renderer.calls.allArgs()).toEqual([[fixture1]]);        
+        expect(renderer.calls.allArgs()).toEqual([[fixture1]]);
         expect(render.calls.allArgs()).toEqual([[fixture2]]);
         //New change state
         renderer.calls.reset();
-        staterModule.calls.argsFor(0)[1]();
+        staterModule.calls.argsFor(1)[1]();
         expect(renderer.calls.allArgs()).toEqual([[fixture1]]);
-
-    })
-    it("when state changed and electron not ready, should save state and call after ready", () => {
 
     })
     afterEach(() => {

@@ -21,22 +21,16 @@ module.exports = () => {
         }, componentConfig)
         //Create renderer///////
         var renderer = Renderer(defaultWindowOpts);
-        ////Create stater///////        
-        var saver = { onChangeState: null };
-        var stater = Stater(componentConfig.state, (state) => {
-            console.log(saver);
-            if (saver.onChangeState) {
-                saver.onChangeState(state);
-            }
+        ////Create stater///////   
+        var stater = Stater(componentConfig.state, () => {
         });
         //Subscribe to electron app ready        
         electronApp.on('ready', () => {
-            
-            saver.onChangeState = (state) => {
+            var onChange = (state) => {
                 renderer(componentConfig.render(state));
-            }
-            console.log("saver2", saver);
-            saver.onChangeState(stater.state);
+            };
+            stater = Stater(stater.state, onChange)
+            onChange(stater.state);
         });
         return {
             setState: stater
