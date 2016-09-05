@@ -19,10 +19,10 @@
     "url": "https://github.com/arvitaly/orbita/issues"
   },
   "dependencies": {
-    "deep-extend": "^0.4.1",
     "electron-prebuilt": "0.36.0",
     "lodash": "^4.15.0",
-    "nanoservice": "^1.0.1"
+    "nanoservice": "^1.0.1",
+    "resolve-module-path": "0.0.2"
   },
   "bin": {
     "orbita": "./bin-start.js"
@@ -32,6 +32,6 @@
     "coveralls": "^2.11.12",
     "istanbul": "^0.4.5",
     "jasmine": "2.4.1",
-    "mock2": "0.0.5"
+    "mock2": "^0.0.6"
   }
 }
