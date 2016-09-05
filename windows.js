@@ -1,10 +1,10 @@
-var _ = require('lodash');
+var extend = require('deep-extend');
 var BrowserWindow = require('electron').BrowserWindow;
 var defaultWindowOpts = require('./default-window-opts');
-var controlWindow = require('./control-window');
+var controlWindow = require('./window-controller');
 var servicesLoader = require('./services-loader');
 function create(windowConfig, errorCallback) {
-    var opts = _.extend({
+    var opts = extend({
         transports: {}
     }, windowConfig.opts, defaultWindowOpts);
     var browserWindow = new BrowserWindow({ width: opts.width, height: opts.height, webPreferences: opts.webPreferences });
@@ -13,13 +13,14 @@ function create(windowConfig, errorCallback) {
         config: windowConfig,
         opts: opts,
         browserWindow: browserWindow,
-        controller: controlWindow(window, {
-            onStart: () => {
-                servicesLoader(window);
-            },
-            onError: errorCallback
-        })
-    }
+        controller: null
+    };
+    window.controller = controlWindow(window, {
+        onStart: () => {
+            servicesLoader(window);
+        },
+        onError: errorCallback
+    });
     browserWindow.loadURL(windowConfig.url, { userAgent: opts.userAgent });
     var webContents = browserWindow.webContents;
     //Subscribe to crash and close for call error (unexpected behavior)
@@ -38,7 +39,7 @@ function create(windowConfig, errorCallback) {
 function remove(window) {
     window.controller.stop();
     try {
-        window.electronWindow.close();
+        window.browserWindow.close();
     } catch (e) {
         return;
     }
