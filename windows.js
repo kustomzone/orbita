@@ -2,6 +2,7 @@ var _ = require('lodash');
 var BrowserWindow = require('electron').BrowserWindow;
 var defaultWindowOpts = require('./default-window-opts');
 var controlWindow = require('./control-window');
+var servicesLoader = require('./services-loader');
 function create(windowConfig, errorCallback) {
     var opts = _.extend({
         transports: {}
@@ -10,9 +11,12 @@ function create(windowConfig, errorCallback) {
     var window = {
         id: windowConfig.id,
         config: windowConfig,
+        opts: opts,
         browserWindow: browserWindow,
-        controller : controlWindow(window, {
-            onStart: function(){},
+        controller: controlWindow(window, {
+            onStart: () => {
+                servicesLoader(window);
+            },
             onError: errorCallback
         })
     }
@@ -29,14 +33,14 @@ function create(windowConfig, errorCallback) {
     webContents.on('dom-ready', function () {
         window.controller.start();
     })
-
     return window;
 }
 function remove(window) {
+    window.controller.stop();
     try {
         window.electronWindow.close();
     } catch (e) {
-
+        return;
     }
 }
 module.exports = {

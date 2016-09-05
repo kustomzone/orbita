@@ -5,12 +5,8 @@ var tr = (opts) => {
     if (!tr.orbita) {
         throw new Error("Please, set orbita before use orbita ipc server");
     }
-
     if (!servers[opts.address]) {
-        console.log("create orbita server ", opts.address)
-        var callbacks = {
-
-        }
+        var callbacks = {}
         ipcMain.on(opts.address, (event, name, data) => {
             if (callbacks[name]) {
                 callbacks[name].map((cb) => {

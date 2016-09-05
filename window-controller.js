@@ -2,7 +2,6 @@ var ipcMain = require('electron').ipcMain;
 var resolver = require('resolve-module-path');
 //Resolve path for require control-module inside window
 var controlModulePath = resolver('./window-controller-inside');
-
 module.exports = (window, events) => {
     return {
         start: () => {
@@ -19,16 +18,12 @@ module.exports = (window, events) => {
                             break;
                     }
                 });
-                window.browserWindow.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(controlModulePath) + ")(window.$$$require$$$," + JSON.stringify(windowConfig.id) + "," + JSON.stringify(require.resolve(window.config.control.script)) + "," + JSON.stringify(window.config.control.args) + ")");
+                var scriptModule = window.config.control.script;
+                window.browserWindow.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(controlModulePath) + ")(window.$$$require$$$," + JSON.stringify(window.config.id) + "," + JSON.stringify(scriptModule) + "," + JSON.stringify(window.config.control.args) + ")");
             } else {
-                //or stub (it is need, because electron has unexpected error with preload)
-                
-                window.browserWindow.executeJavaScript("var test = 'test'");
-                return new Promise((resolve) => {
-                    setTimeout(() => {
-                        resolve();
-                    }, 200)
-                });
+                //or stub (it is need, because electron has unexpected error with preload)                
+                window.browserWindow.webContents.executeJavaScript("var test = 'test'");
+                setTimeout(events.onStart, 200);
             }
         },
         stop: () => {

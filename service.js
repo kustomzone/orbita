@@ -1,8 +1,8 @@
-module.exports = (require, servicePath, args, transports, links) => {
+module.exports = (require, serviceConfig) => {
     var nanoservice = require('nanoservice');
-    var service = require(servicePath)(args);
+    var service = require(serviceConfig.module)(serviceConfig.args);
     nanoservice(service, {
-        transports: transports,
-        links: links
+        transports: serviceConfig.transports,
+        links: serviceConfig.links
     })
 }
