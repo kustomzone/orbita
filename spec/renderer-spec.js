@@ -23,7 +23,7 @@ describe("Renderer", () => {
         renderer([windowConf1]);
         expect(window.on.calls.allArgs()).toEqual([["error", jasmine.any(Function)]]);
         window.on.calls.argsFor(0)[1]();
-        expect(remove.calls.allArgs()).toEqual([[windowConf1]]);
+        expect(remove.calls.allArgs()).toEqual([[{ electronWindow: window, config: windowConf1 }]]);
         expect(create.calls.allArgs()).toEqual([[windowConf1], [windowConf1]]);
     })
     it("when needWindows is empty and current windows is empty, should do nothing", () => {
@@ -35,7 +35,7 @@ describe("Renderer", () => {
     it("when needWindows is setted and current windows is filled without one window, should remove", () => {
         renderer([windowConf1, windowConf2]);
         renderer([windowConf2])
-        expect(remove.calls.allArgs()).toEqual([[windowConf1]]);
+        expect(remove.calls.allArgs()).toEqual([[{ electronWindow: window, config: windowConf1 }]]);
     })
     it("when needWindows is setted and current windows is filled by same window, should create only first time", () => {
         renderer([windowConf1]);

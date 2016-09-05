@@ -11,7 +11,10 @@ module.exports = () => {
                     remove(id);
                     renderer();
                 }).bind(undefined, w.id))
-                currentWindows[w.id] = w;
+                currentWindows[w.id] = {
+                    electronWindow: window,
+                    config: w
+                }
             }
             return w.id;
         })
@@ -26,9 +29,9 @@ module.exports = () => {
         })
         lastNeedWindows = needWindows;
         function remove(id) {
-            var windowConfig = currentWindows[id];
+            var window = currentWindows[id];
             delete currentWindows[id];
-            Windows.remove(windowConfig);
+            Windows.remove(window);
         }
     }
     return renderer;
