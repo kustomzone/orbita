@@ -7,8 +7,8 @@ describe("Renderer", () => {
     beforeEach(() => {
         create = jasmine.createSpy();
         remove = jasmine.createSpy();
-        renderer = mock.require('./../renderer', {
-            './../windows': {
+        renderer = mock.require('./../../renderer', {
+            './../../windows': {
                 create: create,
                 remove: remove
             }

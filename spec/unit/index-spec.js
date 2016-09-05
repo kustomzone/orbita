@@ -7,8 +7,8 @@ describe("Orbita module Index", () => {
     beforeAll(() => {
         electronApp = jasmine.createSpyObj('app', ['on', 'quit']);
         component = jasmine.createSpy();
-        orbitaModule = mock.require('./../index', {
-            './../component': component,
+        orbitaModule = mock.require('./../../index', {
+            './../../component': component,
             'electron': {
                 app: electronApp
             }

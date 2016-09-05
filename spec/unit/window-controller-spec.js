@@ -4,7 +4,7 @@ describe("Window controller", () => {
     var electronIpcMain, WindowController, window, onStart, onError, events, executeJavaScript;
     beforeEach(() => {
         electronIpcMain = jasmine.createSpyObj("electronIpcMain", ["on", "removeAllListeners"]);
-        WindowController = mock.require('./../window-controller', {
+        WindowController = mock.require('./../../window-controller', {
             'electron': { ipcMain: electronIpcMain }
         })
         executeJavaScript = jasmine.createSpy();
@@ -35,7 +35,7 @@ describe("Window controller", () => {
         WindowController(window, events).start();
         expect(electronIpcMain.on.calls.allArgs()).toEqual([["ORBITA__CONTROL_" + window.config.id, jasmine.any(Function)]]);
         //load script
-        var controlModulePath = require.resolve('./../window-controller-inside');
+        var controlModulePath = require.resolve('./../../window-controller-inside');
         var code = `window.$$$require$$$(${JSON.stringify(controlModulePath)})(window.$$$require$$$,${JSON.stringify(window.config.id)},${JSON.stringify(window.config.control.script)},${JSON.stringify(window.config.control.args)})`;
         expect(executeJavaScript.calls.allArgs()).toEqual([[code]]);
     })

@@ -17,9 +17,9 @@ describe("Component", () => {
         rendererModule.and.returnValue(renderer);
         //component render spy
         render = jasmine.createSpy();
-        componentModule = mock.require('./../component',{
-            './../renderer': rendererModule,
-            './../stater': staterModule,
+        componentModule = mock.require('./../../component',{
+            './../../renderer': rendererModule,
+            './../../stater': staterModule,
             'electron': { app: electronApp }
         });
     })

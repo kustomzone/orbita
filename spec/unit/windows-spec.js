@@ -1,4 +1,4 @@
-/*var windows = require('./../windows');
+/*var windows = require('./../../windows');
 describe("Windows", () => {
         
     it("when remove non-closed window and electronWindow closed not throwed error, should worked as is", () => {

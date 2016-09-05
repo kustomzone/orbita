@@ -1,4 +1,4 @@
-var stater = require('./../stater')
+var stater = require('./../../stater')
 var fixture1 = "fix1";
 var fixture2 = "fix2";
 var fixture3 = "fix3";

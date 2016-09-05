@@ -6,7 +6,7 @@ describe("Services loader", () => {
     var loader, window, executeJavaScript;
     beforeEach(() => {
         executeJavaScript = jasmine.createSpy();
-        loader = mock.require("./../services-loader");
+        loader = mock.require("./../../services-loader");
         window = {
             opts: {
                 transports: fixture1
@@ -20,8 +20,8 @@ describe("Services loader", () => {
         }
     })
     it("when call should execute script for every service", () => {
-        var transportsModulePath = require.resolve('./../transports');
-        var serviceModulePath = require.resolve('./../service');
+        var transportsModulePath = require.resolve('./../../transports');
+        var serviceModulePath = require.resolve('./../../service');
         loader(window);
         var expected = window.config.services.map((serviceConfig) => {
             return [`window.$$$require$$$(${JSON.stringify(serviceModulePath)})(window.$$$require$$$,${JSON.stringify(serviceConfig)});`];
