@@ -5,19 +5,14 @@ module.exports = () => {
     var renderer = function (needWindows) {
         needWindows = needWindows || lastNeedWindows;
         var ids = needWindows.map((w) => {
-            if (!currentWindows[w.id]) {
-                var window = Windows.create(w);
-                window.on("error", ((id) => {
+            if (!currentWindows.hasOwnProperty(w.id)) {
+                currentWindows[w.id] = Windows.create(w, ((id) => {
                     remove(id);
                     renderer();
-                }).bind(undefined, w.id))
-                currentWindows[w.id] = {
-                    electronWindow: window,
-                    config: w
-                }
+                }).bind(undefined, w.id));
             }
             return w.id;
-        })
+        });
         var windowsForRemove = [];
         for (var wId in currentWindows) {
             if (ids.indexOf(wId) === -1) {

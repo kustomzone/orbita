@@ -164,24 +164,6 @@ var orbitaModule = function (component) {
                 windowConfig.services.map((serviceConfig) => {
                     serviceConfig.links = serviceConfig.links || [];
                     serviceConfig.transports = serviceConfig.transports || {};
-                    if (serviceConfig.on) {
-                        serviceConfig.transports["____ORBITA_ON"] = { type: "orbita", opts: { address: "____ORBITA_ON" + windowConfig.id } }
-
-                        var sLinks = [];
-                        var sIns = {};
-                        for (var outLinkName in serviceConfig.on) {
-                            serviceConfig.links.push({ transport: "____ORBITA_ON", name: outLinkName, to: outLinkName, type: "out" })
-                            sIns[outLinkName] = (function (callback, data) {
-                                callback.apply(this, [data]);
-                            }).bind(orb, serviceConfig.on[outLinkName]);
-                            sLinks.push({ transport: "t", name: outLinkName, to: outLinkName, type: "in" })
-                        }
-
-                        nanoservice({ in: sIns }, {
-                            transports: { "t": { type: "orbita-ipc-server", opts: { address: "____ORBITA_ON" + windowConfig.id } } },
-                            links: sLinks
-                        })
-                    }
 
                     //Add server for every orbita transport
                     for (var tn in serviceConfig.transports) {
