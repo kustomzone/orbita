@@ -1,4 +1,4 @@
-var orbita = require('./..');
+var orbita = require('./..')({ runAsGlobal: true });
 var module = process.argv[2];
 if (!module) {
     var pp = process.cwd() + "/package.json";
