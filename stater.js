@@ -1,5 +1,5 @@
 var _ = require('lodash');
-module.exports = (initialState, onChange) => {    
+module.exports = (initialState, onChange) => {
     var stater = (partialState) => {
         if (_.isFunction(partialState)) {
             partialState = partialState(stater.state);

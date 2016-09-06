@@ -1,5 +1,10 @@
 module.exports = (require, transports, serviceConfig) => {
-    var nanoservice = require('nanoservice')({ transports: transports });
+    console.log(transports, serviceConfig);
+    var resolvedTransports = {}
+    for (var i in transports) {
+        resolvedTransports[i] = require(transports[i]);
+    }
+    var nanoservice = require('nanoservice')({ transports: resolvedTransports });
     var service = require(serviceConfig.module);
     nanoservice(service, {
         transports: serviceConfig.transports,

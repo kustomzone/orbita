@@ -17,7 +17,7 @@ if (program.basePath) {
 if (program.configFile) {
     config = require(resolve(program.configFile, {
         basePath: basePath
-    }));    
+    }));
 }
 var main
 if (program.main) {
@@ -34,7 +34,7 @@ if (!main) {
 console.log("Orbita start with module ", main);
 var component = require(main);
 Promise.resolve(typeof (component) === "function" ? component(config) : component).then((component) => {
-    orbita(component);
+    global.orbita = orbita(component);
 }).catch((err) => {
     console.error(err);
 })
