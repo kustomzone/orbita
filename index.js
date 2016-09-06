@@ -6,10 +6,13 @@ module.exports = (moduleConfig) => {
     moduleConfig = _.extend({
         runAsGlobal: false
     }, moduleConfig);
+    var comp = component();
     if (moduleConfig.runAsGlobal) {
         app.on('window-all-closed', function () {
             app.quit();
         });
+        global.orbita = comp;
     }
-    return component();
+    comp.transport = require('./orbita-ipc-server')(comp);
+    return comp;
 }

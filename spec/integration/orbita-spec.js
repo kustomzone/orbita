@@ -14,6 +14,7 @@ describe("Integration", () => {
             on: browserWindowOn
         };
         orbita = mock.require("./../../index", {
+            './../../orbita-ipc-server': jasmine.createSpy(),
             'electron': {
                 app: {
                     on: jasmine.createSpy()

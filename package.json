@@ -26,7 +26,7 @@
     "resolve-module-path": "0.0.2"
   },
   "bin": {
-    "orbita": "./bin-start.js"
+    "orbita": "./bin/bin-start.js"
   },
   "homepage": "https://github.com/arvitaly/orbita#readme",
   "devDependencies": {
