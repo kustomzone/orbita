@@ -19,6 +19,7 @@
     "url": "https://github.com/arvitaly/orbita/issues"
   },
   "dependencies": {
+    "commander": "^2.9.0",
     "deep-extend": "^0.4.1",
     "electron-prebuilt": "0.36.0",
     "lodash": "^4.15.0",

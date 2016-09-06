@@ -1,29 +1,39 @@
 /*eslint no-console: ["error", { allow: ["warn", "error", "log"] }] */
-var orbita = require('./..')({ runAsGlobal: true });
-var module = process.argv[2];
-if (!module) {
-    var pp = process.cwd() + "/package.json";
-    var mainM
-    try {
-        mainM = require.resolve(pp)
-    } catch (e) {
-        mainM = null;
-    }
-    if (mainM) {
-        module = require(mainM).main;
-    }
-    if (!module) {
-        module = process.cwd() + "/index.js";
-    } else {
-        module = process.cwd() + "/" + module;
-    }
+var program = require('commander');
+var resolve = require('resolve-module-path');
+program
+    .version('0.0.1')
+    .option('-m --main [type]', "Orbita-component file")
+    .option('-c, --config-file [type]', 'NanoService configuration file')
+    .option('-p, --base-path [type]', 'Base path for all')
+    .parse(process.argv);
+var config;
+var basePath;
+if (program.basePath) {
+    basePath = program.basePath;
 } else {
-    module = require('path').resolve(module);
+    basePath = process.cwd();
 }
-console.log("Orbita start with module ", module);
-var component = require(module);
-Promise.resolve(typeof (component) === "function" ? component() : component).then((component) => {
-    orbita.runAsGlobal = true;
+if (program.configFile) {
+    config = require(resolve(program.configFile, {
+        basePath: basePath
+    }));    
+}
+var main
+if (program.main) {
+    main = resolve(program.main, {
+        basePath: basePath
+    });
+}
+var orbita = require('./../index')({ runAsGlobal: true });
+if (!main) {
+    main = resolve('./', {
+        basePath: basePath
+    })
+}
+console.log("Orbita start with module ", main);
+var component = require(main);
+Promise.resolve(typeof (component) === "function" ? component(config) : component).then((component) => {
     orbita(component);
 }).catch((err) => {
     console.error(err);
