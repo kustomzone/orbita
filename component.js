@@ -3,7 +3,6 @@ var electronApp = require('electron').app;
 var Stater = require('./stater');
 var Renderer = require('./renderer');
 module.exports = () => {
-
     return (componentConfig) => {
         componentConfig = _.extend({
             state: null

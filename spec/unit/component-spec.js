@@ -20,7 +20,7 @@ describe("Component", () => {
         componentModule = mock.require('./../../component',{
             './../../renderer': rendererModule,
             './../../stater': staterModule,
-            'electron': { app: electronApp }
+            'electron': {hhh:16,  app: electronApp }
         });
     })
     beforeEach(() => {
@@ -58,7 +58,6 @@ describe("Component", () => {
         renderer.calls.reset();
         staterModule.calls.argsFor(1)[1]();
         expect(renderer.calls.allArgs()).toEqual([[fixture1]]);
-
     })
     afterEach(() => {
         staterModule.calls.reset();
