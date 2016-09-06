@@ -1,8 +1,11 @@
-module.exports = (require, serviceConfig) => {
-    var nanoservice = require('nanoservice');
-    var service = require(serviceConfig.module)(serviceConfig.args);
+module.exports = (require, transports, serviceConfig) => {
+    var nanoservice = require('nanoservice')({ transports: transports });
+    var service = require(serviceConfig.module);
     nanoservice(service, {
         transports: serviceConfig.transports,
-        links: serviceConfig.links
+        links: serviceConfig.links,
+        env: {
+            window: window
+        }
     })
 }

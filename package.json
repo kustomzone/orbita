@@ -23,7 +23,7 @@
     "deep-extend": "^0.4.1",
     "electron-prebuilt": "0.36.0",
     "lodash": "^4.15.0",
-    "nanoservice": "^1.0.2",
+    "nanoservice": "^1.0.3",
     "resolve-module-path": "0.0.2"
   },
   "bin": {
