@@ -1,3 +1,4 @@
+/*eslint no-console: ["error", { allow: ["warn", "error", "log"] }] */
 var orbita = require('./..')({ runAsGlobal: true });
 var module = process.argv[2];
 if (!module) {
@@ -8,7 +9,6 @@ if (!module) {
     } catch (e) {
         mainM = null;
     }
-
     if (mainM) {
         module = require(mainM).main;
     }
