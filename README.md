@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/orbita.svg)](https://badge.fury.io/js/orbita)
 [![Build Status](https://travis-ci.org/arvitaly/orbita.svg?branch=master)](https://travis-ci.org/arvitaly/orbita)
-[![Coverage Status](https://coveralls.io/repos/github/arvitaly/orbita/badge.svg?branch=master)](https://coveralls.io/github/arvitaly/orbita?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/arvitaly/orbita/badge.svg?branch=master&1)](https://coveralls.io/github/arvitaly/orbita?branch=master)
 
 # What is it?
 
