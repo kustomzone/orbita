@@ -16,8 +16,8 @@ So,  you create orbita-component with settings for controll windows and messages
 
 # Install
 
-    //First, install orbita, now works with 0.37.2 version of Electron
-    npm install orbita@1.4.2 -g
+    //First, install orbita, now works with 0.36.0 version of Electron
+    npm install orbita@2.0.0 -g
     //start app, if not set script, orbita will find main module in package.json or just take index.js
     orbita app.js
 
@@ -50,13 +50,6 @@ So,  you create orbita-component with settings for controll windows and messages
                         module: __dirname + "/service1.js",
                         //args for creating service
                         args: state.fix + state.test,
-                        //internal subscribe to service
-                        on:{
-                            serviceOutEvent: function(){
-                                //Access to `orbita` and change state
-                                this.setState({ test: fixture2 });
-                            }
-                        },
                         //transports for nanoservice
                         transports: {
                             "tr1": {
@@ -85,7 +78,7 @@ So,  you create orbita-component with settings for controll windows and messages
                 }]
             }
         })
-        //Nanoservice in main process
+        //Nanoservice in main process        
         nanoservice({
             in:{
                 ev:(data)=>{
