@@ -2,10 +2,11 @@ var _ = require('lodash');
 var electronApp = require('electron').app;
 var Stater = require('./stater');
 var Renderer = require('./renderer');
-module.exports = () => {
+module.exports = (nanoservice) => {
     return (componentConfig) => {
         componentConfig = _.extend({
-            state: null
+            state: null,
+            main: null
         }, componentConfig)
         //Create renderer///////
         var renderer = Renderer();
@@ -20,6 +21,10 @@ module.exports = () => {
             stater = Stater(stater.state, onChange)
             onChange(stater.state);
         });
+        //Create main service
+        if (componentConfig.main) {
+            nanoservice(componentConfig.main.service, componentConfig.main.config);
+        }
         return {
             setState: stater
         }

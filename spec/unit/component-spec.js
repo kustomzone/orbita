@@ -17,10 +17,10 @@ describe("Component", () => {
         rendererModule.and.returnValue(renderer);
         //component render spy
         render = jasmine.createSpy();
-        componentModule = mock.require('./../../component',{
+        componentModule = mock.require('./../../component', {
             './../../renderer': rendererModule,
             './../../stater': staterModule,
-            'electron': {hhh:16,  app: electronApp }
+            'electron': { hhh: 16, app: electronApp }
         });
     })
     beforeEach(() => {
@@ -58,6 +58,12 @@ describe("Component", () => {
         renderer.calls.reset();
         staterModule.calls.argsFor(1)[1]();
         expect(renderer.calls.allArgs()).toEqual([[fixture1]]);
+    })
+    it("when main service setted, should create with nanoservice", () => {
+        var nanoservice = jasmine.createSpy();
+        component = componentModule(nanoservice);
+        component({ main: { service: fixture1, config: fixture2 } });
+        expect(nanoservice.calls.allArgs()).toEqual([[fixture1, fixture2]]);
     })
     afterEach(() => {
         staterModule.calls.reset();

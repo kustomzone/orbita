@@ -7,13 +7,15 @@ describe("bin", () => {
     it("when load with config", () => {
         var component = jasmine.createSpy();
         var commander = jasmine.createSpy();
+        var Orbita = jasmine.createSpy();
         commander.version = () => { return commander };
         commander.option = () => { return commander };
         commander.parse = () => { };
         commander.basePath = path.resolve(path.join(__dirname, './../fixtures/bin1'));
         commander.configFile = "./config.json";
+        Orbita.and.returnValue(jasmine.createSpy());
         mock.require('./../../bin/bin', {
-            './../../index': jasmine.createSpy(),
+            './../../index': Orbita,
             './../fixtures/bin1/index': component,
             commander: commander
         });
