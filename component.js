@@ -10,10 +10,11 @@ module.exports = () => {
     var component = (componentConfig) => {
         componentConfig = _.extend({
             state: null,
-            main: null
+            main: null,
+            opts: {}
         }, componentConfig)
         //Create renderer///////
-        var renderer = Renderer();
+        var renderer = Renderer(componentConfig.opts);
         ////Create stater///////   
         var stater = Stater(componentConfig.state, () => { });
         var ret = {

@@ -3,17 +3,18 @@ var BrowserWindow = require('electron').BrowserWindow;
 var defaultWindowOpts = require('./default-window-opts');
 var controlWindow = require('./window-controller');
 var servicesLoader = require('./services-loader');
-function create(windowConfig, errorCallback) {
+function create(windowConfig, orbitaWindowOpts, errorCallback) {
     var opts = extend({
         transports: {}
-    }, windowConfig.opts, defaultWindowOpts);
+    }, defaultWindowOpts, orbitaWindowOpts, windowConfig.opts);
     var browserWindow = new BrowserWindow({ width: opts.width, height: opts.height, webPreferences: opts.webPreferences });
     var window = {
         id: windowConfig.id,
         config: windowConfig,
         opts: opts,
         browserWindow: browserWindow,
-        controller: null
+        controller: null,
+        isClosed: false
     };
     window.controller = controlWindow(window, {
         onStart: () => {
@@ -28,6 +29,7 @@ function create(windowConfig, errorCallback) {
         errorCallback("window was crashed");
     });
     browserWindow.on('close', function () {
+        window.isClosed = true;
         errorCallback("window was closed");
     });
     //Wait for window will be ready
@@ -38,10 +40,8 @@ function create(windowConfig, errorCallback) {
 }
 function remove(window) {
     window.controller.stop();
-    try {
+    if (!window.isClosed) {
         window.browserWindow.close();
-    } catch (e) {
-        return;
     }
 }
 module.exports = {

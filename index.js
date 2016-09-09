@@ -7,10 +7,10 @@ module.exports = (moduleConfig) => {
         runAsGlobal: false
     }, moduleConfig);
     var comp = component();
-    if (moduleConfig.runAsGlobal) {
+    /*if (moduleConfig.runAsGlobal) {
         app.on('window-all-closed', function () {
             app.quit();
         });
-    }
+    }*/
     return comp;
 }

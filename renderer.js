@@ -1,12 +1,12 @@
 var Windows = require('./windows');
-module.exports = () => {
+module.exports = (orbitaWindowOpts) => {
     var currentWindows = {};
     var lastNeedWindows = [];
     var renderer = function (needWindows) {
         needWindows = needWindows || lastNeedWindows;
         var ids = needWindows.map((w) => {
             if (!currentWindows.hasOwnProperty(w.id)) {
-                currentWindows[w.id] = Windows.create(w, ((id) => {
+                currentWindows[w.id] = Windows.create(w, orbitaWindowOpts, ((id) => {
                     remove(id);
                     renderer();
                 }).bind(undefined, w.id));
@@ -24,9 +24,9 @@ module.exports = () => {
         })
         lastNeedWindows = needWindows;
         function remove(id) {
-            var window = currentWindows[id];
+            var w = currentWindows[id];
             delete currentWindows[id];
-            Windows.remove(window);
+            Windows.remove(w);
         }
     }
     return renderer;
