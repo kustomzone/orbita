@@ -42,7 +42,7 @@ function remove(window) {
     if (window && window.controller) {
         window.controller.stop();
     }
-    if (!window.isClosed) {
+    if (window && !window.isClosed) {
         window.browserWindow.close();
     }
 }
