@@ -39,7 +39,9 @@ function create(windowConfig, orbitaWindowOpts, errorCallback) {
     return window;
 }
 function remove(window) {
-    window.controller.stop();
+    if (window && window.controller) {
+        window.controller.stop();
+    }
     if (!window.isClosed) {
         window.browserWindow.close();
     }
