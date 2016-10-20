@@ -11,7 +11,10 @@ module.exports = () => {
         componentConfig = _.extend({
             state: null,
             main: null,
-            opts: {}
+            opts: {},
+            config: {
+
+            }
         }, componentConfig)
         //Create renderer///////
         var renderer = Renderer(componentConfig.opts);
@@ -19,6 +22,11 @@ module.exports = () => {
         var stater = Stater(componentConfig.state, () => { });
         var ret = {
             setState: stater
+        }
+        if (componentConfig.config.paths) {
+            for (var p in componentConfig.config.paths) {
+                electronApp.setPath(p, componentConfig.config.paths[p]);
+            }
         }
         //Subscribe to electron app ready        
         electronApp.on('ready', () => {
