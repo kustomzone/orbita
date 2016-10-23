@@ -1,4 +1,5 @@
 module.exports = (require, transports, serviceConfig) => {
+    console.log("load service", transports, serviceConfig);
     try {
         var resolvedTransports = {}
         for (var i in transports) {

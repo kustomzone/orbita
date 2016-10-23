@@ -4,6 +4,7 @@ var defaultWindowOpts = require('./default-window-opts');
 var controlWindow = require('./window-controller');
 var servicesLoader = require('./services-loader');
 function create(windowConfig, orbitaWindowOpts, errorCallback) {
+    //global.__o_log("create window", windowConfig);
     var opts = extend({
         transports: {}
     }, defaultWindowOpts, orbitaWindowOpts, windowConfig.opts);

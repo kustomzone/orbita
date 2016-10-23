@@ -28,6 +28,7 @@ module.exports = () => {
                 electronApp.setPath(p, componentConfig.config.paths[p]);
             }
         }
+        //electronApp.commandLine.appendSwitch("enable-logging", '2');
         //Subscribe to electron app ready        
         electronApp.on('ready', () => {
             var onChange = (state) => {

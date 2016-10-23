@@ -1,6 +1,7 @@
 var resolve = require('resolve-module-path');
 var serviceModulePath = resolve('./service');
 module.exports = (window) => {
+    console.log("load services", window.config.services);
     if (!window.config.services) {
         return;
     }

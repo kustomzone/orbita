@@ -23,7 +23,7 @@ module.exports = (window, events) => {
             } else {
                 //or stub (it is need, because electron has unexpected error with preload)                
                 window.browserWindow.webContents.executeJavaScript("var test = 'test'");
-                setTimeout(events.onStart, 200);
+                setTimeout(events.onStart, 1500);
             }
         },
         stop: () => {

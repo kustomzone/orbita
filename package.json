@@ -24,6 +24,8 @@
     "electron": "^1.4.4",
     "lodash": "^4.15.0",
     "nanoservice": "^1.0.5",
+    "nanoservice-transport-ipc-client": "0.0.2",
+    "nanoservice-transport-ipc-server": "0.0.3",
     "resolve-module-path": "0.0.2"
   },
   "bin": {
