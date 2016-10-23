@@ -15,7 +15,7 @@ module.exports = () => {
             config: {
 
             }
-        }, componentConfig)
+        }, componentConfig);
         //Create renderer///////
         var renderer = Renderer(componentConfig.opts);
         ////Create stater///////   
@@ -37,9 +37,21 @@ module.exports = () => {
             ret.setState = Stater(stater.state, onChange)
             onChange(stater.state);
         });
+
         //Create main service
         if (componentConfig.main) {
-            nanoservice(componentConfig.main.service, componentConfig.main.config);
+            if (componentConfig.opts.transports) {
+                for (var i in componentConfig.opts.transports) {
+                    nanoservice.use(i, require(componentConfig.opts.transports[i]));
+                }
+            }
+            try {
+                nanoservice(componentConfig.main.service, componentConfig.main.config);
+            } catch (e) {
+                global.__o_log(e, e.stack);
+                process.exit(1);
+                return;
+            }
         }
         return ret;
         ////////////////////////
