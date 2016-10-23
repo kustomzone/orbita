@@ -19,16 +19,17 @@ module.exports = (window, events) => {
                     }
                 });
                 var scriptModule = window.config.control.script;
-                window.browserWindow.webContents.send("load-control-script", controlModulePath, window.config.id, JSON.stringify(scriptModule), window.config.control.args);
+                window.browserWindow.webContents.send("load-script", controlModulePath, window.config.id, scriptModule, window.config.control.args);
                 /*window.browserWindow.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(controlModulePath) + ")(window.$$$require$$$," + JSON.stringify(window.config.id) + "," + JSON.stringify(scriptModule) + "," + JSON.stringify(window.config.control.args) + ")", false, function (result) {
                     global.__o_log("execute", result)
                 });*/
             } else {
-                setTimeout(() => {
+                events.onStart();
+                /*setTimeout(() => {
                     //or stub (it is need, because electron has unexpected error with preload)                
                     window.browserWindow.webContents.executeJavaScript("var test = 'test'");
                     setTimeout(events.onStart, 500);
-                }, 1000);
+                }, 1000);*/
             }
         },
         stop: () => {

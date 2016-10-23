@@ -1,6 +1,6 @@
 {
   "name": "orbita",
-  "version": "2.1.11",
+  "version": "2.1.12",
   "description": "Framework for Atom/Electron with reactive windows controller and nanoservice's support",
   "main": "index.js",
   "scripts": {
