@@ -33,9 +33,18 @@ function create(windowConfig, orbitaWindowOpts, errorCallback) {
         window.isClosed = true;
         errorCallback("window was closed");
     });
+    webContents.on('did-finish-load', function () {
+        window.controller.start();
+    })
+    webContents.on('did-fail-load', function () {
+        global.__o_log("did-fail-load");
+    })
+    //did-fail-load    
+
     //Wait for window will be ready
     webContents.on('dom-ready', function () {
-        window.controller.start();
+
+
     })
     return window;
 }

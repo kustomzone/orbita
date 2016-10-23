@@ -19,9 +19,10 @@ module.exports = (window, events) => {
                     }
                 });
                 var scriptModule = window.config.control.script;
-                setTimeout(() => {
-                    window.browserWindow.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(controlModulePath) + ")(window.$$$require$$$," + JSON.stringify(window.config.id) + "," + JSON.stringify(scriptModule) + "," + JSON.stringify(window.config.control.args) + ")");
-                }, 1500)
+                window.browserWindow.webContents.send("load-control-script", controlModulePath, window.config.id, JSON.stringify(scriptModule), window.config.control.args);
+                /*window.browserWindow.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(controlModulePath) + ")(window.$$$require$$$," + JSON.stringify(window.config.id) + "," + JSON.stringify(scriptModule) + "," + JSON.stringify(window.config.control.args) + ")", false, function (result) {
+                    global.__o_log("execute", result)
+                });*/
             } else {
                 setTimeout(() => {
                     //or stub (it is need, because electron has unexpected error with preload)                
