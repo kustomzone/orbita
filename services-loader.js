@@ -8,7 +8,16 @@ module.exports = (window) => {
     window.config.services.map((serviceConfig) => {
         serviceConfig.links = serviceConfig.links || [];
         serviceConfig.transports = serviceConfig.transports || {};
-        window.browserWindow.webContents.send("load-script", serviceModulePath, window.opts.transports, serviceConfig);
+        try {
+            window.browserWindow.webContents.send("load-script", serviceModulePath, window.opts.transports, serviceConfig);
+        } catch (e) {
+            try {
+                var ipcRenderer = require('electron').ipcRenderer;
+                ipcRenderer.send("ORBITA__CONTROL_" + window.id, "error", e)
+            } catch (e) {
+                console.error(e);
+            }
+        }
         //window.browserWindow.webContents.executeJavaScript("window.$$$require$$$(" + JSON.stringify(serviceModulePath) + ")(window.$$$require$$$," + JSON.stringify(window.opts.transports) + "," + JSON.stringify(serviceConfig) + ");")
 
     });
