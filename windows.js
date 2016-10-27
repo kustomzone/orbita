@@ -36,6 +36,13 @@ function create(windowConfig, orbitaWindowOpts, errorCallback) {
     webContents.on('did-finish-load', function () {
         window.controller.start();
     })
+    /*var onHeadersReceived = (d, c) => {
+        delete d.responseHeaders['X-Frame-Options'];
+        delete d.responseHeaders['x-frame-options'];
+        delete d.responseHeaders['X-FRAME-OPTIONS'];
+        c({ cancel: false, responseHeaders: d.responseHeaders });
+    }
+    webContents.session.webRequest.onHeadersReceived({}, onHeadersReceived);*/
     webContents.on('did-fail-load', function () {
         global.__o_log("did-fail-load");
     })
