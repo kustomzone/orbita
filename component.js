@@ -29,6 +29,9 @@ module.exports = () => {
             }
         }
         //electronApp.commandLine.appendSwitch("enable-logging", '2');
+        electronApp.on('window-all-closed', () => {
+            //app.quit()
+        })
         //Subscribe to electron app ready        
         electronApp.on('ready', () => {
             var onChange = (state) => {
