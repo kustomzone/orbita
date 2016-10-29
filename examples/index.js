@@ -1,6 +1,3 @@
 "use strict";
-const React = require('react');
-const _1 = require('./../');
-let app = React.createElement(_1.App, null, 
-    React.createElement(_1.BrowserWindow, {webPreferences: {}, url: __dirname + "/index.html", loadUrlOptions: { userAgent: "test" }})
-);
+const start_1 = require('./../start');
+start_1.default(__dirname + "/app.js");

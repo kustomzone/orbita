@@ -19,6 +19,10 @@
   "homepage": "https://github.com/arvitaly/orbita#readme",
   "dependencies": {
     "@types/react": "^0.14.43",
-    "react": "^15.3.2"
+    "@types/react-dom": "^0.14.18",
+    "electron-prebuilt": "^0.36.0",
+    "jsdom": "^9.8.3",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2"
   }
 }

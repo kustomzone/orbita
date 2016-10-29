@@ -2,7 +2,7 @@ import * as React from 'react';
 import { BrowserWindow } from 'electron';
 interface IProps extends Electron.BrowserWindowOptions {
     isAutoRecreateOnCrash?: boolean;
-    isAutoReacreateOnClose?: boolean;
+    isAutoRecreateOnClose?: boolean;
     url?: string;
     loadUrlOptions?: Electron.LoadURLOptions;
 }
@@ -14,6 +14,7 @@ class BrowserWindowComponent extends React.Component<IProps, IState>{
         this.setState({
             window: null
         })
+        this.createWindow();
     }
     createWindow() {
         let window = new BrowserWindow(this.props);
@@ -24,6 +25,13 @@ class BrowserWindowComponent extends React.Component<IProps, IState>{
                 this.createWindow();
             }
         });
+        window.on("closed", () => {
+            if (this.props.isAutoRecreateOnClose) {
+                this.destroyWindow();
+                this.setState({ window: null });
+                this.createWindow();
+            }
+        })
         if (this.props.url) {
             window.loadURL(this.props.url, this.props.loadUrlOptions || undefined);
         }

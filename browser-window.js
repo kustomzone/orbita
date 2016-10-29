@@ -6,6 +6,7 @@ class BrowserWindowComponent extends React.Component {
         this.setState({
             window: null
         });
+        this.createWindow();
     }
     createWindow() {
         let window = new electron_1.BrowserWindow(this.props);
@@ -13,6 +14,13 @@ class BrowserWindowComponent extends React.Component {
             this.destroyWindow();
             this.setState({ window: null });
             if (this.props.isAutoRecreateOnCrash === true) {
+                this.createWindow();
+            }
+        });
+        window.on("closed", () => {
+            if (this.props.isAutoRecreateOnClose) {
+                this.destroyWindow();
+                this.setState({ window: null });
                 this.createWindow();
             }
         });
