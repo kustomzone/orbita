@@ -4,7 +4,8 @@ var resolve = require('resolve-module-path');
 program
     .version('0.0.1')
     .option('-m --main [type]', "Orbita-component file")
-    .option('-c, --config-file [type]', 'NanoService configuration file')
+    .option('-f, --config-file [type]', 'NanoService configuration file')
+    .option('-c, --config [type]', 'NanoService configuration file')
     .option('-p, --base-path [type]', 'Base path for all')
     .option('-l, --log-address [type]', 'IPC log address')
     .parse(process.argv);
@@ -23,6 +24,9 @@ nanoservice((config) => {
         transports: { "t": { type: "ipc-client", opts: { address: program.logAddress } } },
         links: [{ transport: "t", to: "log", name: "log", type: "out" }]
     });
+global.orbita = {
+    log: log
+};
 var config;
 var basePath;
 if (program.basePath) {
@@ -34,6 +38,9 @@ if (program.configFile) {
     config = require(resolve(program.configFile, {
         basePath: basePath
     }));
+}
+if (!config) {
+    config = JSON.parse(program.config);
 }
 var main
 if (program.main) {
@@ -47,11 +54,14 @@ if (!main) {
         basePath: basePath
     })
 }
-log("Orbita start with module ", main);
+log("Orbita start with module ", main, ", config", config);
 var component = require(main);
 Promise.resolve(typeof (component) === "function" ? component(config) : component).then((component) => {
     global.orbita = orbita(component);
     global.orbita.log = log;
 }).catch((err) => {
-    console.error(err);
+    log("Error: ", err);
+    setTimeout(() => {
+        process.exit(1);
+    }, 5000)
 })
