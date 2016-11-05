@@ -20,6 +20,7 @@ nanoservice(() => {
         transports: { "t": { type: "ipc-server", opts: { address: logAddress, silent: true } } },
         links: [{ transport: "t", to: "log", name: "log", type: "in" }]
     });
+
 var args = process.argv.slice(2);
 args.unshift(path.resolve(path.join(__dirname, "bin.js")));
 args.push("--log-address=" + logAddress);
@@ -28,5 +29,8 @@ var child = proc.spawn(electron, args, {
     stdio: "inherit"
 })
 child.on('close', function (code) {
-    process.exit(code)
+    console.log("Orbita closed with code", code);
+    setTimeout(() => {
+        process.exit(code)
+    }, 1000)
 })

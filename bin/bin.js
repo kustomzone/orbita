@@ -24,6 +24,7 @@ nanoservice((config) => {
         transports: { "t": { type: "ipc-client", opts: { address: program.logAddress } } },
         links: [{ transport: "t", to: "log", name: "log", type: "out" }]
     });
+    
 global.orbita = {
     log: log
 };

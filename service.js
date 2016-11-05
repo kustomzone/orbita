@@ -1,4 +1,4 @@
-module.exports = (require, transports, serviceConfig) => {
+module.exports = (require, transports, serviceConfig, onError) => {
     console.log("load service", transports, serviceConfig);
     try {
         var resolvedTransports = {}
@@ -13,7 +13,8 @@ module.exports = (require, transports, serviceConfig) => {
             links: serviceConfig.links,
             env: {
                 window: window
-            }
+            },
+            onError: onError
         })
     } catch (e) {
         console.error(e, e.stack);

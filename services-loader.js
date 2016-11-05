@@ -9,7 +9,14 @@ module.exports = (window) => {
         serviceConfig.links = serviceConfig.links || [];
         serviceConfig.transports = serviceConfig.transports || {};
         try {
-            window.browserWindow.webContents.send("load-script", serviceModulePath, window.opts.transports, serviceConfig);
+            window.browserWindow.webContents.send("load-script", serviceModulePath, window.opts.transports, serviceConfig, (err) => {
+                try {
+                    var ipcRenderer = require('electron').ipcRenderer;
+                    ipcRenderer.send("ORBITA__CONTROL_" + window.id, "error", err)
+                } catch (e) {
+                    console.error(e);
+                }
+            });
         } catch (e) {
             try {
                 var ipcRenderer = require('electron').ipcRenderer;
