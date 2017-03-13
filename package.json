@@ -24,9 +24,9 @@
     "electron": "^1.4.5",
     "lodash": "^4.15.0",
     "nanoservice": "^1.0.5",
-    "nanoservice-transport-ipc-client": "0.0.2",
-    "nanoservice-transport-ipc-server": "0.0.3",
-    "resolve-module-path": "0.0.2"
+    "nanoservice-transport-ipc-client": "0.0.4",
+    "nanoservice-transport-ipc-server": "0.1.6",
+    "resolve-module-path": "0.0.6"
   },
   "bin": {
     "orbita": "./bin/bin-start.js"
@@ -35,8 +35,8 @@
   "devDependencies": {
     "coveralls": "^2.11.12",
     "istanbul": "^0.4.5",
-    "jasmine": "2.4.1",
-    "mock2": "0.0.7",
+    "jasmine": "2.5.3",
+    "mock2": "0.0.17",
     "proxyquire": "^1.7.10"
   }
 }
