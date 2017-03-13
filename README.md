@@ -1,5 +1,7 @@
 # Orbita: framework for Atom/Electron with reactive windows controller and nanoservice's support
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/arvitaly/orbita.svg)](https://greenkeeper.io/)
+
 [![npm version](https://badge.fury.io/js/orbita.svg)](https://badge.fury.io/js/orbita)
 [![Build Status](https://travis-ci.org/arvitaly/orbita.svg?branch=master)](https://travis-ci.org/arvitaly/orbita)
 [![Coverage Status](https://coveralls.io/repos/github/arvitaly/orbita/badge.svg?branch=master&1)](https://coveralls.io/github/arvitaly/orbita?branch=master)
