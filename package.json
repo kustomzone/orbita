@@ -1,10 +1,11 @@
 {
   "name": "orbita",
-  "version": "3.0.0-alpha",
+  "version": "4.0.0-alpha",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tsc && tslint --project=tsconfig.json && jest --verbose --coverage",
+    "watch:test": "jest --watch"
   },
   "repository": {
     "type": "git",
@@ -18,11 +19,20 @@
   },
   "homepage": "https://github.com/arvitaly/orbita#readme",
   "dependencies": {
-    "@types/react": "^0.14.43",
-    "@types/react-dom": "^0.14.18",
-    "electron-prebuilt": "^0.36.0",
-    "jsdom": "^9.8.3",
-    "react": "^15.3.2",
-    "react-dom": "^15.3.2"
+    "@types/electron": "^1.4.34",
+    "electron": "^1.6.2"
+  },
+  "jest": {
+    "automock": true,
+    "unmockedModulePathPatterns": [
+      "react"
+    ]
+  },
+  "devDependencies": {
+    "@types/jest": "^19.2.2",
+    "coveralls": "^2.12.0",
+    "jest": "^19.0.2",
+    "tslint": "^4.5.1",
+    "typescript": "^2.2.1"
   }
 }
