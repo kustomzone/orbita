@@ -44,7 +44,7 @@ class Orbita {
         const child = spawn(electron as any, args, {
             cwd: process.cwd(),
             stdio: "inherit",
-        })
+        });
         child.on("close", (code) => {
             setTimeout(() => {
                 this.startWindow(config.id);
