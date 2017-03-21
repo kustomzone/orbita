@@ -9,7 +9,7 @@ interface IWindowConfig {
     url: string;
     module?: string;
     args?: any;
-    on: { [index: string]: (...args: any[]) => void };
+    on?: { [index: string]: (...args: any[]) => void };
 }
 interface IWindow {
     proc?: ChildProcess;
