@@ -12,7 +12,7 @@ program
     .option("-e --events [n]", "Events for subscription")
     .option("-i --id [n]", "ID for communication")
     .parse(process.argv);
-const events = program.events ? (program.events as string).split(",") : null;
+const events = program.events ? (program.events as string).split(",") : [];
 app.once("ready", () => {
     const window = new BrowserWindow(DefaultWindowOpts);
     if (program.url) {

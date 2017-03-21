@@ -14,7 +14,7 @@ program
     .option("-e --events [n]", "Events for subscription")
     .option("-i --id [n]", "ID for communication")
     .parse(process.argv);
-const events = program.events ? program.events.split(",") : null;
+const events = program.events ? program.events.split(",") : [];
 electron_1.app.once("ready", () => {
     const window = new electron_1.BrowserWindow(default_window_opts_1.default);
     if (program.url) {
