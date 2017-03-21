@@ -58,7 +58,7 @@ class Orbita {
             args.push("--module=" + config.module);
         }
         if (config.args) {
-            args.push("--args=" + config.args.join(","));
+            args.push("--props=" + config.args.join(","));
         }
         const on = config.on;
         if (on) {
