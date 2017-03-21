@@ -1,12 +1,11 @@
 {
   "name": "orbita",
-  "version": "2.1.17",
+  "version": "4.0.0-alpha",
   "description": "Framework for Atom/Electron with reactive windows controller and nanoservice's support",
   "main": "index.js",
   "scripts": {
-    "test": "istanbul cover node_modules/jasmine/bin/jasmine.js",
-    "watch:test": "nodemon --exec \"npm run test\"",
-    "debug:test": "node debug node_modules/jasmine/bin/jasmine.js"
+    "test": "tsc && tslint --project=tsconfig.json && jest --verbose --coverage",
+    "watch:test": "jest --watch"
   },
   "repository": {
     "type": "git",
@@ -18,25 +17,26 @@
   "bugs": {
     "url": "https://github.com/arvitaly/orbita/issues"
   },
-  "dependencies": {
-    "commander": "^2.9.0",
-    "deep-extend": "^0.4.1",
-    "electron": "^1.4.5",
-    "lodash": "^4.15.0",
-    "nanoservice": "^1.0.5",
-    "nanoservice-transport-ipc-client": "0.0.2",
-    "nanoservice-transport-ipc-server": "0.0.3",
-    "resolve-module-path": "0.0.2"
-  },
-  "bin": {
-    "orbita": "./bin/bin-start.js"
-  },
   "homepage": "https://github.com/arvitaly/orbita#readme",
+  "dependencies": {
+    "@types/commander": "^2.3.31",
+    "@types/electron": "^1.4.34",
+    "@types/node": "^7.0.8",
+    "commander": "^2.9.0",
+    "electron": "^1.6.2",
+    "node-ipc": "^8.10.3"
+  },
+  "jest": {
+    "automock": true,
+    "unmockedModulePathPatterns": [
+      "react"
+    ]
+  },
   "devDependencies": {
-    "coveralls": "^2.11.12",
-    "istanbul": "^0.4.5",
-    "jasmine": "2.4.1",
-    "mock2": "0.0.7",
-    "proxyquire": "^1.7.10"
+    "@types/jest": "^19.2.2",
+    "coveralls": "^2.12.0",
+    "jest": "^19.0.2",
+    "tslint": "^4.5.1",
+    "typescript": "^2.2.1"
   }
 }

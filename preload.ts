@@ -1,18 +1,16 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const $$$realStringStartWith = String.prototype.startsWith;
 let oldStartWith;
-const electron_1 = require("electron");
+import { ipcRenderer } from "electron";
 // tslint:disable:no-console
 console.log("preload");
-const wrapper = (f, args) => {
+const wrapper = (f: any, args: any) => {
     let params = [f];
     params = params.concat(args);
     return f.bind.apply(f, params);
 };
 // tslint:disable:only-arrow-functions
 // tslint:disable-next-line:space-before-function-paren
-electron_1.ipcRenderer.on("load-script", function (e, modulePath, events = []) {
+ipcRenderer.on("load-script", function (e, modulePath, events: string[] = []) {
     console.log("load-script");
     try {
         // Hack
@@ -24,15 +22,14 @@ electron_1.ipcRenderer.on("load-script", function (e, modulePath, events = []) {
             args.push(arguments[i]);
         }
         console.log("events", events, "args", args);
-        const wrapped = wrapper(require(modulePath).default, args);
+        const wrapped = wrapper((require(modulePath) as any).default, args);
         const emitter = new wrapped();
-        events.map((event) => emitter.on(event, electron_1.ipcRenderer.send.bind(electron_1.ipcRenderer, event)));
+        events.map((event) => emitter.on(event, ipcRenderer.send.bind(ipcRenderer, event)));
         // Hack
         String.prototype.startsWith = oldStartWith;
         //
-    }
-    catch (e) {
+    } catch (e) {
         console.error(e, e.stack);
     }
 });
-exports.default = {};
+export default {};
