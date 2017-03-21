@@ -46,12 +46,13 @@ class Orbita {
         if (config.module) {
             args.push("--module=" + config.module);
         }
-        if (config.on) {
+        const on = config.on;
+        if (on) {
             const events = Object.keys(config.on);
             events.map((event) => {
                 // tslint:disable-next-line:only-arrow-functions space-before-function-paren
                 this.ipc.server.on(event, function (ar) {
-                    config.on[event].apply(null, ar);
+                    on[event].apply(null, ar);
                 });
             });
             args.push("--events=" + events.join(","));
