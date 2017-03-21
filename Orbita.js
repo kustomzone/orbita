@@ -1,10 +1,21 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const child_process_1 = require("child_process");
 const electron = require("electron");
+const ipcRoot = require("node-ipc");
 const modulePath = __dirname + "/start.js";
 class Orbita {
     constructor() {
         this.windows = {};
+        this.id = "OrbitaIPC_" + Math.random().toString() + (+new Date()).toString();
+        const ipc = new ipcRoot.IPC();
+        ipc.config.retry = 1500;
+        ipc.config.id = this.id;
+        ipc.config.silent = true;
+        ipc.log = null;
+        ipc.serve(null);
+        ipc.server.start();
+        this.ipc = ipc;
     }
     setWindows(windowsConfigs) {
         const newIds = windowsConfigs.map((config) => config.id);
@@ -34,6 +45,20 @@ class Orbita {
         if (config.module) {
             args.push("--module=" + config.module);
         }
+        if (config.on) {
+            const events = Object.keys(config.on);
+            events.map((event) => {
+                this.ipc.server.on(event, () => {
+                    const eventArgs = [];
+                    for (let i = 1; i < arguments.length; i++) {
+                        eventArgs.push(arguments[i]);
+                    }
+                    config.on[event].apply(null, eventArgs);
+                });
+            });
+            args.push("--events=" + events.join(","));
+        }
+        args.push("--id=" + this.id);
         const child = child_process_1.spawn(electron, args, {
             cwd: process.cwd(),
             stdio: "inherit",
@@ -52,5 +77,4 @@ class Orbita {
         delete this.windows[id];
     }
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Orbita;

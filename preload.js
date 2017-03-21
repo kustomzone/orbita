@@ -1,10 +1,16 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const $$$realStringStartWith = String.prototype.startsWith;
 let oldStartWith;
 const electron_1 = require("electron");
 // tslint:disable:no-console
 console.log("preload");
-electron_1.ipcRenderer.on("load-script", (e, modulePath) => {
+const wrapper = (f, args) => {
+    let params = [f];
+    params = params.concat(args);
+    return f.bind.apply(f, params);
+};
+electron_1.ipcRenderer.on("load-script", (e, modulePath, events = []) => {
     console.log("load-script");
     try {
         // Hack
@@ -12,17 +18,19 @@ electron_1.ipcRenderer.on("load-script", (e, modulePath) => {
         String.prototype.startsWith = $$$realStringStartWith;
         //
         const args = [];
-        for (let i = 2; i < arguments.length; i++) {
+        for (let i = 3; i < arguments.length; i++) {
             args.push(arguments[i]);
         }
         console.log(args);
-        require(modulePath).default.apply(this, args);
+        const wrapped = wrapper(require(modulePath).default, args);
+        const emitter = new wrapped();
+        events.map((event) => emitter.on(event, electron_1.ipcRenderer.send.bind(electron_1.ipcRenderer, event)));
         // Hack
         String.prototype.startsWith = oldStartWith;
+        //
     }
     catch (e) {
         console.error(e, e.stack);
     }
 });
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = {};
