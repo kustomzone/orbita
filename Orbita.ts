@@ -8,7 +8,7 @@ interface IWindowConfig {
     id: string;
     url: string;
     module?: string;
-    args?: any;
+    args?: string[];
     on?: { [index: string]: (...args: any[]) => void };
 }
 interface IWindow {
@@ -56,6 +56,9 @@ class Orbita {
         }
         if (config.module) {
             args.push("--module=" + config.module);
+        }
+        if (config.args) {
+            args.push("--args=" + config.args.join(","));
         }
         const on = config.on;
         if (on) {

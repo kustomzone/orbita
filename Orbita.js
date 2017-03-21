@@ -46,6 +46,9 @@ class Orbita {
         if (config.module) {
             args.push("--module=" + config.module);
         }
+        if (config.args) {
+            args.push("--args=" + config.args.join(","));
+        }
         const on = config.on;
         if (on) {
             const events = Object.keys(config.on);

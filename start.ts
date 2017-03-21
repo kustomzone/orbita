@@ -7,6 +7,7 @@ import ipcRoot = require("node-ipc");
 import program = require("commander");
 program
     .option("-m --module [n]", "Inside module")
+    .option("-a --props [n]", "Arguments for instantiate module")
     .option("-u --url [n]", "Start url")
     .option("-e --events [n]", "Events for subscription")
     .option("-i --id [n]", "ID for communication")
@@ -18,11 +19,13 @@ app.once("ready", () => {
         window.loadURL(program.url, DefaultLoadUrlOpts);
     }
     if (program.module) {
+        const args = ("" + program.props as string).split(",");
         window.webContents.on("did-finish-load", () => {
-            window.webContents.send("load-script", program.module, events);
+            window.webContents.send("load-script", program.module, events, args);
             window.webContents.openDevTools({ mode: "right" });
         });
     }
+    BrowserWindow.addDevToolsExtension(__dirname + "/extension");
     if (events) {
         const ipc = new ipcRoot.IPC();
         ipc.config.retry = 1500;

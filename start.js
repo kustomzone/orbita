@@ -9,6 +9,7 @@ const ipcRoot = require("node-ipc");
 const program = require("commander");
 program
     .option("-m --module [n]", "Inside module")
+    .option("-a --props [n]", "Arguments for instantiate module")
     .option("-u --url [n]", "Start url")
     .option("-e --events [n]", "Events for subscription")
     .option("-i --id [n]", "ID for communication")
@@ -20,11 +21,13 @@ electron_1.app.once("ready", () => {
         window.loadURL(program.url, default_load_url_opts_1.default);
     }
     if (program.module) {
+        const args = ("" + program.props).split(",");
         window.webContents.on("did-finish-load", () => {
-            window.webContents.send("load-script", program.module, events);
+            window.webContents.send("load-script", program.module, events, args);
             window.webContents.openDevTools({ mode: "right" });
         });
     }
+    electron_1.BrowserWindow.addDevToolsExtension(__dirname + "/extension");
     if (events) {
         const ipc = new ipcRoot.IPC();
         ipc.config.retry = 1500;
