@@ -24,7 +24,11 @@ electron_1.ipcRenderer.on("load-script", function (e, modulePath, events = []) {
             args.push(arguments[i]);
         }
         console.log("events", events, "args", args);
-        const wrapped = wrapper(require(modulePath).default, args);
+        const module = require(modulePath).default;
+        if (!module) {
+            throw new Error("Inside module should export default class");
+        }
+        const wrapped = wrapper(module, args);
         const emitter = new wrapped();
         events.map((event) => emitter.on(event, electron_1.ipcRenderer.send.bind(electron_1.ipcRenderer, event)));
         // Hack

@@ -22,7 +22,11 @@ ipcRenderer.on("load-script", function (e, modulePath, events: string[] = []) {
             args.push(arguments[i]);
         }
         console.log("events", events, "args", args);
-        const wrapped = wrapper((require(modulePath) as any).default, args);
+        const module = (require(modulePath) as any).default;
+        if (!module) {
+            throw new Error("Inside module should export default class");
+        }
+        const wrapped = wrapper(module, args);
         const emitter = new wrapped();
         events.map((event) => emitter.on(event, ipcRenderer.send.bind(ipcRenderer, event)));
         // Hack
