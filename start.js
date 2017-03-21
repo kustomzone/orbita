@@ -11,6 +11,7 @@ program
     .option("-e --events [n]", "Events for subscription")
     .option("-i --id [n]", "ID for communication")
     .parse(process.argv);
+const events = program.events ? program.events.split(",") : null;
 electron_1.app.once("ready", () => {
     const window = new electron_1.BrowserWindow(default_window_opts_1.default);
     if (program.url) {
@@ -18,22 +19,24 @@ electron_1.app.once("ready", () => {
     }
     if (program.module) {
         window.webContents.on("did-finish-load", () => {
-            window.webContents.send("load-script", program.module);
+            window.webContents.send("load-script", program.module, events);
             window.webContents.openDevTools({ mode: "right" });
         });
     }
-    if (program.events) {
+    if (events) {
         const ipc = new ipcRoot.IPC();
         ipc.config.retry = 1500;
         ipc.config.silent = false;
         ipc.connectTo(program.id);
-        program.events.split(",").map((event) => {
-            electron_1.ipcMain.on(event, (e, arg) => {
+        const ipcClient = ipc.of[program.id];
+        events.map((event) => {
+            // tslint:disable-next-line:only-arrow-functions space-before-function-paren
+            electron_1.ipcMain.on(event, function (e, arg) {
                 const eventArgs = [];
                 for (let i = 1; i < arguments.length; i++) {
                     eventArgs.push(arguments[i]);
                 }
-                ipc.of[program.id].emit(event, eventArgs);
+                ipcClient.emit(event, eventArgs);
             });
         });
     }

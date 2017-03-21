@@ -12,7 +12,6 @@ class Orbita {
         ipc.config.retry = 1500;
         ipc.config.id = this.id;
         ipc.config.silent = true;
-        ipc.log = null;
         ipc.serve(null);
         ipc.server.start();
         this.ipc = ipc;
@@ -48,12 +47,9 @@ class Orbita {
         if (config.on) {
             const events = Object.keys(config.on);
             events.map((event) => {
-                this.ipc.server.on(event, () => {
-                    const eventArgs = [];
-                    for (let i = 1; i < arguments.length; i++) {
-                        eventArgs.push(arguments[i]);
-                    }
-                    config.on[event].apply(null, eventArgs);
+                // tslint:disable-next-line:only-arrow-functions space-before-function-paren
+                this.ipc.server.on(event, function (ar) {
+                    config.on[event].apply(null, ar);
                 });
             });
             args.push("--events=" + events.join(","));
