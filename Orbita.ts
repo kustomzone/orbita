@@ -1,3 +1,5 @@
+// tslint:disable-next-line:no-reference
+/// <reference path="./typings.d.ts" />
 import { ChildProcess, spawn } from "child_process";
 import { BrowserWindow } from "electron";
 import electron = require("electron");

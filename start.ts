@@ -1,3 +1,5 @@
+// tslint:disable-next-line:no-reference
+/// <reference path="./typings.d.ts" />
 import { app, BrowserWindow, ipcMain } from "electron";
 import DefaultLoadUrlOpts from "./default-load-url-opts";
 import DefaultWindowOpts from "./default-window-opts";

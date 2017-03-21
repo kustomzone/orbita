@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+// tslint:disable-next-line:no-reference
+/// <reference path="./typings.d.ts" />
 const electron_1 = require("electron");
 const default_load_url_opts_1 = require("./default-load-url-opts");
 const default_window_opts_1 = require("./default-window-opts");
