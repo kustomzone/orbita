@@ -25,11 +25,6 @@ app.once("ready", () => {
     }
     if (program.module) {
         const args = ("" + program.props as string).split("~").map((arg) => {
-            ipcClient.emit("log", {
-                arg,
-                argv: process.argv,
-                rep: JSON.parse(new Buffer(arg, "base64").toString("utf-8"))
-            });
             return JSON.parse(new Buffer(arg, "base64").toString("utf-8"));
         });
         window.webContents.on("did-finish-load", () => {
