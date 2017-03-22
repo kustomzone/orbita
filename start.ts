@@ -13,13 +13,25 @@ program
     .option("-i --id [n]", "ID for communication")
     .parse(process.argv);
 const events = program.events ? (program.events as string).split(",") : [];
+const ipc = new ipcRoot.IPC();
+ipc.config.retry = 1500;
+ipc.config.silent = false;
+ipc.connectTo(program.id);
+const ipcClient = ipc.of[program.id];
 app.once("ready", () => {
     const window = new BrowserWindow(DefaultWindowOpts);
     if (program.url) {
         window.loadURL(program.url, DefaultLoadUrlOpts);
     }
     if (program.module) {
-        const args = ("" + program.props as string).split(",");
+        const args = ("" + program.props as string).split("~").map((arg) => {
+            ipcClient.emit("log", {
+                arg,
+                argv: process.argv,
+                rep: JSON.parse(new Buffer(arg, "base64").toString("utf-8"))
+            });
+            return JSON.parse(new Buffer(arg, "base64").toString("utf-8"));
+        });
         window.webContents.on("did-finish-load", () => {
             window.webContents.send("load-script", program.module, events, args);
             window.webContents.openDevTools({ mode: "right" });
@@ -27,11 +39,6 @@ app.once("ready", () => {
     }
     BrowserWindow.addDevToolsExtension(__dirname + "/extension");
     if (events) {
-        const ipc = new ipcRoot.IPC();
-        ipc.config.retry = 1500;
-        ipc.config.silent = false;
-        ipc.connectTo(program.id);
-        const ipcClient = ipc.of[program.id];
         events.map((event) => {
             // tslint:disable-next-line:only-arrow-functions space-before-function-paren
             ipcMain.on(event, function (e, arg) {

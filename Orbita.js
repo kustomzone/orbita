@@ -16,6 +16,10 @@ class Orbita {
         ipc.config.silent = true;
         ipc.serve(null);
         ipc.server.start();
+        ipc.server.on("log", (...args) => {
+            args.pop();
+            console.log.apply(console, args);
+        });
         this.ipc = ipc;
     }
     setWindows(windowsConfigs) {
@@ -47,7 +51,9 @@ class Orbita {
             args.push("--module=" + config.module);
         }
         if (config.args) {
-            args.push("--props=" + config.args.join(","));
+            args.push("--props=\"" + config.args.map((arg) => {
+                return new Buffer(JSON.stringify(arg)).toString("base64");
+            }).join("~") + "\"");
         }
         const on = config.on;
         if (on) {
