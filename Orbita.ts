@@ -4,7 +4,7 @@ import { ChildProcess, spawn } from "child_process";
 import { BrowserWindow } from "electron";
 import electron = require("electron");
 import ipcRoot = require("node-ipc");
-interface IWindowConfig {
+export interface IWindowConfig {
     id: string;
     url: string;
     module?: string;
