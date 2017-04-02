@@ -37,7 +37,7 @@ class Orbita {
     }
     destroy() {
         this.setWindows([]);
-        this.ipc.stop();
+        this.ipc.server.stop();
     }
     addWindow(config) {
         this.windows[config.id] = {
@@ -77,7 +77,9 @@ class Orbita {
         });
         child.on("close", (code) => {
             setTimeout(() => {
-                this.startWindow(config.id);
+                if (this.windows[config.id]) {
+                    this.startWindow(config.id);
+                }
             }, 1000);
         });
         this.windows[id].proc = child;
