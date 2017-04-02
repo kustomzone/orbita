@@ -35,6 +35,10 @@ class Orbita {
         });
         currentIds.map((id) => this.removeWindow(id));
     }
+    destroy() {
+        this.setWindows([]);
+        this.ipc.stop();
+    }
     addWindow(config) {
         this.windows[config.id] = {
             config,
@@ -76,6 +80,7 @@ class Orbita {
                 this.startWindow(config.id);
             }, 1000);
         });
+        this.windows[id].proc = child;
     }
     removeWindow(id) {
         const window = this.windows[id];
