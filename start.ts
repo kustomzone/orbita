@@ -11,6 +11,7 @@ program
     .option("-u --url [n]", "Start url")
     .option("-e --events [n]", "Events for subscription")
     .option("-i --id [n]", "ID for communication")
+    .option("-w --window-id [n]", "Window unique id")
     .parse(process.argv);
 const events = program.events ? (program.events as string).split(",") : [];
 const ipc = new ipcRoot.IPC();
@@ -41,7 +42,7 @@ app.once("ready", () => {
                 for (let i = 1; i < arguments.length; i++) {
                     eventArgs.push(arguments[i]);
                 }
-                ipcClient.emit(program.id + "_" + event, eventArgs);
+                ipcClient.emit(program.windowId + "_" + event, eventArgs);
             });
         });
     }
