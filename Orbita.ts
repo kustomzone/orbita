@@ -75,7 +75,7 @@ class Orbita {
             const events = Object.keys(config.on);
             events.map((event) => {
                 // tslint:disable-next-line:only-arrow-functions space-before-function-paren
-                this.ipc.server.on(event, function (ar: any[]) {
+                this.ipc.server.on(id + "_" + event, function (ar: any[]) {
                     on[event].apply(null, ar);
                 });
             });

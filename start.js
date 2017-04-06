@@ -43,7 +43,7 @@ electron_1.app.once("ready", () => {
                 for (let i = 1; i < arguments.length; i++) {
                     eventArgs.push(arguments[i]);
                 }
-                ipcClient.emit(event, eventArgs);
+                ipcClient.emit(program.id + "_" + event, eventArgs);
             });
         });
     }
