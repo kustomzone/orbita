@@ -54,6 +54,7 @@ class Orbita {
         if (config.module) {
             args.push("--module=" + config.module);
         }
+        args.push("--windowId=" + id);
         if (config.args) {
             args.push("--props=\"" + config.args.map((arg) => {
                 return new Buffer(JSON.stringify(arg)).toString("base64");
