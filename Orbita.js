@@ -54,6 +54,9 @@ class Orbita {
         if (config.module) {
             args.push("--module=" + config.module);
         }
+        if (config.proxy) {
+            args.push("--proxy=" + config.proxy);
+        }
         args.push("--window-id=" + id);
         if (config.args) {
             args.push("--props=\"" + config.args.map((arg) => {

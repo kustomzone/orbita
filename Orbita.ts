@@ -8,6 +8,7 @@ export interface IWindowConfig {
     id: string;
     url: string;
     module?: string;
+    proxy?: string;
     args?: any[];
     on?: { [index: string]: (...args: any[]) => void };
 }
@@ -64,6 +65,9 @@ class Orbita {
         }
         if (config.module) {
             args.push("--module=" + config.module);
+        }
+        if (config.proxy) {
+            args.push("--proxy=" + config.proxy);
         }
         args.push("--window-id=" + id);
         if (config.args) {
