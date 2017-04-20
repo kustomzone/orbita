@@ -1,3 +1,4 @@
+import { remote } from "electron";
 const $$$realStringStartWith = String.prototype.startsWith;
 let oldStartWith;
 // tslint:disable-next-line:no-namespace
@@ -31,6 +32,7 @@ ipcRenderer.on("load-script", function (e, modulePath, events: string[] = [], ar
         if (!module) {
             throw new Error("Inside module should export default class");
         }
+        args.push({ remote });
         const wrapped = wrapper(module, args);
         const emitter = new wrapped();
         events.map((event) => emitter.on(event, ipcRenderer.send.bind(ipcRenderer, event)));

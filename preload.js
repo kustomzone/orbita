@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const electron_1 = require("electron");
 const $$$realStringStartWith = String.prototype.startsWith;
 let oldStartWith;
 // tslint:disable-next-line:variable-name
 window.___$___esw = "Loading...";
-const electron_1 = require("electron");
+const electron_2 = require("electron");
 // tslint:disable:no-console
 console.log("preload");
 const wrapper = (f, args) => {
@@ -14,7 +15,7 @@ const wrapper = (f, args) => {
 };
 // tslint:disable:only-arrow-functions
 // tslint:disable-next-line:space-before-function-paren
-electron_1.ipcRenderer.on("load-script", function (e, modulePath, events = [], args) {
+electron_2.ipcRenderer.on("load-script", function (e, modulePath, events = [], args) {
     console.log("load-script");
     try {
         // Hack
@@ -26,9 +27,10 @@ electron_1.ipcRenderer.on("load-script", function (e, modulePath, events = [], a
         if (!module) {
             throw new Error("Inside module should export default class");
         }
+        args.push({ remote: electron_1.remote });
         const wrapped = wrapper(module, args);
         const emitter = new wrapped();
-        events.map((event) => emitter.on(event, electron_1.ipcRenderer.send.bind(electron_1.ipcRenderer, event)));
+        events.map((event) => emitter.on(event, electron_2.ipcRenderer.send.bind(electron_2.ipcRenderer, event)));
         // Draw dev panel
         emitter.on("panel", (data) => {
             window.___$___esw = JSON.stringify(data);

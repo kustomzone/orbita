@@ -29,20 +29,23 @@ app.once("ready", () => {
     } else {
         afterProxy();
     }
-    function afterProxy() {
+    // BrowserWindow.addDevToolsExtension(__dirname + "/extension");
+    window.webContents.openDevTools({ mode: "right" });
+    async function afterProxy() {
+        // await new Promise((resolve) => setTimeout(resolve, 1000));
         if (program.url) {
             window.loadURL(program.url, DefaultLoadUrlOpts);
         }
         if (program.module) {
-            const args = ("" + program.props as string).split("~").map((arg) => {
+
+            const args = program.props.replace(/"/gi, "") ? ("" + program.props as string).split("~").map((arg) => {
                 return JSON.parse(new Buffer(arg, "base64").toString("utf-8"));
-            });
-            window.webContents.on("did-finish-load", () => {
+            }) : [];
+            window.webContents.once("did-finish-load", () => {
                 window.webContents.send("load-script", program.module, events, args);
-                window.webContents.openDevTools({ mode: "right" });
             });
         }
-        BrowserWindow.addDevToolsExtension(__dirname + "/extension");
+
         if (events) {
             events.map((event) => {
                 // tslint:disable-next-line:only-arrow-functions space-before-function-paren
