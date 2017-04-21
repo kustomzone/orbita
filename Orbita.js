@@ -7,7 +7,8 @@ const electron = require("electron");
 const ipcRoot = require("node-ipc");
 const modulePath = __dirname + "/start.js";
 class Orbita {
-    constructor() {
+    constructor(config) {
+        this.config = config;
         this.windows = {};
         this.id = "OrbitaIPC_" + Math.random().toString() + (+new Date()).toString();
         const ipc = new ipcRoot.IPC();
@@ -56,6 +57,18 @@ class Orbita {
         }
         if (config.proxy) {
             args.push("--proxy=" + config.proxy);
+        }
+        let userDataDir = "";
+        if (!config.userDataDir) {
+            if (this.config && this.config.userDataDir) {
+                userDataDir = this.config.userDataDir;
+            }
+        }
+        else {
+            userDataDir = config.userDataDir;
+        }
+        if (userDataDir) {
+            args.push("--user-data-dir=" + userDataDir);
         }
         args.push("--window-id=" + id);
         if (config.args) {

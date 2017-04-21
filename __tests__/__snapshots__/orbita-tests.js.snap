@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`when set orbita windows, should open it 1`] = `"x"`;
+
+exports[`when set orbita windows, should open it 2`] = `1.5`;
+
+exports[`when set orbita windows, should open it 3`] = `"Hello, Orbita!"`;

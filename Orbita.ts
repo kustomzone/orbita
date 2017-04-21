@@ -9,8 +9,12 @@ export interface IWindowConfig {
     url: string;
     module?: string;
     proxy?: string;
+    userDataDir?: string;
     args?: any[];
     on?: { [index: string]: (...args: any[]) => void };
+}
+export interface IOrbitaConfig {
+    userDataDir?: string;
 }
 interface IWindow {
     proc?: ChildProcess;
@@ -21,7 +25,7 @@ class Orbita {
     protected windows: { [index: string]: IWindow } = {};
     protected id: string;
     protected ipc: any;
-    constructor() {
+    constructor(protected config?: IOrbitaConfig) {
         this.id = "OrbitaIPC_" + Math.random().toString() + (+new Date()).toString();
         const ipc = new ipcRoot.IPC();
         ipc.config.retry = 1500;
@@ -68,6 +72,17 @@ class Orbita {
         }
         if (config.proxy) {
             args.push("--proxy=" + config.proxy);
+        }
+        let userDataDir = "";
+        if (!config.userDataDir) {
+            if (this.config && this.config.userDataDir) {
+                userDataDir = this.config.userDataDir;
+            }
+        } else {
+            userDataDir = config.userDataDir;
+        }
+        if (userDataDir) {
+            args.push("--user-data-dir=" + userDataDir);
         }
         args.push("--window-id=" + id);
         if (config.args) {

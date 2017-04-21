@@ -22,6 +22,7 @@ program
     .option("-e --events [n]", "Events for subscription")
     .option("-i --id [n]", "ID for communication")
     .option("-p --proxy [n]", "Proxy")
+    .option("-d --user-data-dir [n]", "UserData directory for electron")
     .option("-w --window-id [n]", "Window unique id")
     .parse(process.argv);
 const events = program.events ? program.events.split(",") : [];
@@ -30,6 +31,9 @@ ipc.config.retry = 1500;
 ipc.config.silent = false;
 ipc.connectTo(program.id);
 const ipcClient = ipc.of[program.id];
+if (program.userDataDir) {
+    electron_1.app.setPath("userData", program.userDataDir);
+}
 electron_1.app.once("ready", () => {
     const window = new electron_1.BrowserWindow(default_window_opts_1.default);
     if (program.proxy) {
@@ -40,7 +44,7 @@ electron_1.app.once("ready", () => {
     else {
         afterProxy();
     }
-    // BrowserWindow.addDevToolsExtension(__dirname + "/extension");
+    electron_1.BrowserWindow.addDevToolsExtension(__dirname + "/extension");
     window.webContents.openDevTools({ mode: "right" });
     function afterProxy() {
         return __awaiter(this, void 0, void 0, function* () {

@@ -14,7 +14,7 @@ const wrapper = (f, args) => {
     return f.bind.apply(f, params);
 };
 // tslint:disable:only-arrow-functions
-// tslint:disable-next-line:space-before-function-paren
+// tslint:disable:space-before-function-paren
 electron_2.ipcRenderer.on("load-script", function (e, modulePath, events = [], args) {
     console.log("load-script");
     try {
@@ -30,7 +30,11 @@ electron_2.ipcRenderer.on("load-script", function (e, modulePath, events = [], a
         args.push({ remote: electron_1.remote });
         const wrapped = wrapper(module, args);
         const emitter = new wrapped();
-        events.map((event) => emitter.on(event, electron_2.ipcRenderer.send.bind(electron_2.ipcRenderer, event)));
+        events.map((event) => {
+            emitter.on(event, function () {
+                electron_2.ipcRenderer.send(event, ...arguments);
+            });
+        });
         // Draw dev panel
         emitter.on("panel", (data) => {
             window.___$___esw = JSON.stringify(data);
