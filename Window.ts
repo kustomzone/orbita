@@ -45,9 +45,14 @@ class Window {
         }
         // Load module for page
         const events = this.page.events || [];
+        let isReadyEvent = false;
         // Subscribe to events
         if (events) {
             events.map((event) => {
+                if (event === "ready") {
+                    isReadyEvent = true;
+                    return;
+                }
                 const that = this as any;
                 // tslint:disable-next-line:only-arrow-functions space-before-function-paren
                 const func = function (_: any, arg: any) {
@@ -66,6 +71,9 @@ class Window {
         }
         if (this.page.module) {
             this.window.webContents.send("load-script", this.page.module, this.page.events || [], this.page.args || []);
+        }
+        if (isReadyEvent) {
+            this.ipcClient.emit("ready");
         }
     }
 }
