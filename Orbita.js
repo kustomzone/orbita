@@ -10,7 +10,7 @@ class Orbita {
     constructor(config) {
         this.config = config;
         this.windows = {};
-        this.id = "OrbitaIPC_" + Math.random().toString() + (+new Date()).toString();
+        this.id = "OrbitaIPC_" + this.generateId();
         const ipc = new ipcRoot.IPC();
         ipc.config.retry = 1500;
         ipc.config.id = this.id;
@@ -46,48 +46,12 @@ class Orbita {
         };
         this.startWindow(config.id);
     }
+    generateId() {
+        return Math.random().toString() + (+new Date()).toString();
+    }
     startWindow(id) {
         const config = this.windows[id].config;
-        const args = [modulePath];
-        if (config.url) {
-            args.push("--url=" + config.url);
-        }
-        if (config.module) {
-            args.push("--module=" + config.module);
-        }
-        if (config.proxy) {
-            args.push("--proxy=" + config.proxy);
-        }
-        let userDataDir = "";
-        if (!config.userDataDir) {
-            if (this.config && this.config.userDataDir) {
-                userDataDir = this.config.userDataDir;
-            }
-        }
-        else {
-            userDataDir = config.userDataDir;
-        }
-        if (userDataDir) {
-            args.push("--user-data-dir=" + userDataDir);
-        }
-        args.push("--window-id=" + id);
-        if (config.args) {
-            args.push("--props=\"" + config.args.map((arg) => {
-                return new Buffer(JSON.stringify(arg)).toString("base64");
-            }).join("~") + "\"");
-        }
-        const on = config.on;
-        if (on) {
-            const events = Object.keys(config.on);
-            events.map((event) => {
-                // tslint:disable-next-line:only-arrow-functions space-before-function-paren
-                this.ipc.server.on(id + "_" + event, function (ar) {
-                    on[event].apply(null, ar);
-                });
-            });
-            args.push("--events=" + events.join(","));
-        }
-        args.push("--id=" + this.id);
+        const args = [modulePath, this.id];
         const child = child_process_1.spawn(electron, args, {
             cwd: process.cwd(),
             stdio: "inherit",
@@ -100,6 +64,43 @@ class Orbita {
             }, 1000);
         });
         this.windows[id].proc = child;
+        let userDataDir = "";
+        if (!config.userDataDir) {
+            if (this.config && this.config.userDataDir) {
+                userDataDir = this.config.userDataDir;
+            }
+        }
+        else {
+            userDataDir = config.userDataDir;
+        }
+        const startConfig = {
+            url: config.url,
+            userDataDir,
+            proxy: config.proxy,
+            windowId: config.id,
+            pages: config.pages.map((page) => {
+                const pageId = config.id + "_" + this.generateId();
+                const events = Object.keys(page.on || {});
+                const on = page.on || {};
+                events.map((event) => {
+                    // tslint:disable-next-line:only-arrow-functions space-before-function-paren
+                    this.ipc.server.on(pageId + "_" + event, function (ar) {
+                        on[event].apply(null, ar);
+                    });
+                });
+                args.push("--events=" + events.join(","));
+                return {
+                    id: pageId,
+                    matches: page.matches,
+                    module: page.module,
+                    args: page.args,
+                    events,
+                };
+            }),
+        };
+        this.ipc.server.on("inited", () => {
+            this.ipc.server.broadcast("start", startConfig);
+        });
     }
     removeWindow(id) {
         const window = this.windows[id];

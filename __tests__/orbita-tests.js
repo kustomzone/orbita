@@ -16,17 +16,31 @@ it("when set orbita windows, should open it", (done) => __awaiter(this, void 0, 
     orbita.setWindows([{
             id: "1",
             url: "http://127.0.0.1:" + port + "/test.html",
-            module: __dirname + "/../__fixtures__/module1",
-            on: {
-                load: (arg1, arg2, title) => {
-                    expect(arg1).toMatchSnapshot();
-                    expect(arg2).toMatchSnapshot();
-                    expect(title).toMatchSnapshot();
-                    orbita.destroy();
-                    done();
-                },
-            },
-            args: ["x", 1.5],
+            pages: [{
+                    matches: ["test"],
+                    module: __dirname + "/../__fixtures__/module1",
+                    on: {
+                        load: (arg1, arg2, title) => {
+                            expect(arg1).toMatchSnapshot();
+                            expect(arg2).toMatchSnapshot();
+                            expect(title).toMatchSnapshot();
+                        },
+                    },
+                    args: ["x", 1.5],
+                }, {
+                    matches: ["page2"],
+                    module: __dirname + "/../__fixtures__/module1",
+                    on: {
+                        load: (arg1, arg2, title) => {
+                            expect(arg1).toMatchSnapshot();
+                            expect(arg2).toMatchSnapshot();
+                            expect(title).toMatchSnapshot();
+                            orbita.destroy();
+                            done();
+                        },
+                    },
+                    args: ["y", 2.5],
+                }],
             userDataDir: __dirname + "/../tmp/userData",
         }]);
 }));
@@ -36,6 +50,9 @@ beforeEach(() => __awaiter(this, void 0, void 0, function* () {
     const app = express();
     app.get("/test.html", (req, res) => {
         res.send(`<!doctype><html><title>Hello, Orbita!</title></html>`);
+    });
+    app.get("/page2.html", (req, res) => {
+        res.send(`<!doctype><html><title>Hello, Page2!</title></html>`);
     });
     port = yield freeport_es6_1.default();
     server = yield new Promise((resolve, reject) => {

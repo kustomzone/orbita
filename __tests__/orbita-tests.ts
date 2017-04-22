@@ -8,17 +8,31 @@ it("when set orbita windows, should open it", async (done) => {
     orbita.setWindows([{
         id: "1",
         url: "http://127.0.0.1:" + port + "/test.html",
-        module: __dirname + "/../__fixtures__/module1",
-        on: {
-            load: (arg1, arg2, title) => {
-                expect(arg1).toMatchSnapshot();
-                expect(arg2).toMatchSnapshot();
-                expect(title).toMatchSnapshot();
-                orbita.destroy();
-                done();
+        pages: [{
+            matches: ["test"],
+            module: __dirname + "/../__fixtures__/module1",
+            on: {
+                load: (arg1, arg2, title) => {
+                    expect(arg1).toMatchSnapshot();
+                    expect(arg2).toMatchSnapshot();
+                    expect(title).toMatchSnapshot();
+                },
             },
-        },
-        args: ["x", 1.5],
+            args: ["x", 1.5],
+        }, {
+            matches: ["page2"],
+            module: __dirname + "/../__fixtures__/module1",
+            on: {
+                load: (arg1, arg2, title) => {
+                    expect(arg1).toMatchSnapshot();
+                    expect(arg2).toMatchSnapshot();
+                    expect(title).toMatchSnapshot();
+                    orbita.destroy();
+                    done();
+                },
+            },
+            args: ["y", 2.5],
+        }],
         userDataDir: __dirname + "/../tmp/userData",
     }]);
 
@@ -29,6 +43,9 @@ beforeEach(async () => {
     const app = express();
     app.get("/test.html", (req, res) => {
         res.send(`<!doctype><html><title>Hello, Orbita!</title></html>`);
+    });
+    app.get("/page2.html", (req, res) => {
+        res.send(`<!doctype><html><title>Hello, Page2!</title></html>`);
     });
     port = await freeport();
     server = await new Promise<Server>((resolve, reject) => {

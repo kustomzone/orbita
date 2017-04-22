@@ -6,6 +6,9 @@ class Module1 extends eventemitter3_1.EventEmitter {
         super();
         setTimeout(() => {
             this.emit("load", arg1, arg2, electron.remote.getCurrentWindow().getTitle());
+            if (window.location.href.indexOf("page2") === -1) {
+                window.location.href = "/page2.html";
+            }
         }, 100);
     }
 }

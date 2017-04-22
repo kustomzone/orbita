@@ -4,17 +4,35 @@ import { ChildProcess, spawn } from "child_process";
 import { BrowserWindow } from "electron";
 import electron = require("electron");
 import ipcRoot = require("node-ipc");
-export interface IWindowConfig {
-    id: string;
-    url: string;
+export interface IPageConfig {
+    matches: string[];
     module?: string;
-    proxy?: string;
-    userDataDir?: string;
     args?: any[];
     on?: { [index: string]: (...args: any[]) => void };
 }
+export interface IStartPageConfig {
+    id: string;
+    matches: string[];
+    module?: string;
+    args?: any[];
+    events?: string[];
+}
+export interface IWindowConfig {
+    id: string;
+    url: string;
+    proxy?: string;
+    userDataDir?: string;
+    pages: IPageConfig[];
+}
 export interface IOrbitaConfig {
     userDataDir?: string;
+}
+export interface IStartConfig {
+    windowId: string;
+    url?: string;
+    userDataDir?: string;
+    proxy?: string;
+    pages: IStartPageConfig[];
 }
 interface IWindow {
     proc?: ChildProcess;
@@ -26,7 +44,7 @@ class Orbita {
     protected id: string;
     protected ipc: any;
     constructor(protected config?: IOrbitaConfig) {
-        this.id = "OrbitaIPC_" + Math.random().toString() + (+new Date()).toString();
+        this.id = "OrbitaIPC_" + this.generateId();
         const ipc = new ipcRoot.IPC();
         ipc.config.retry = 1500;
         ipc.config.id = this.id;
@@ -61,47 +79,12 @@ class Orbita {
         };
         this.startWindow(config.id);
     }
+    protected generateId() {
+        return Math.random().toString() + (+new Date()).toString();
+    }
     protected startWindow(id: string) {
         const config = this.windows[id].config;
-        const args = [modulePath];
-        if (config.url) {
-            args.push("--url=" + config.url);
-        }
-        if (config.module) {
-            args.push("--module=" + config.module);
-        }
-        if (config.proxy) {
-            args.push("--proxy=" + config.proxy);
-        }
-        let userDataDir = "";
-        if (!config.userDataDir) {
-            if (this.config && this.config.userDataDir) {
-                userDataDir = this.config.userDataDir;
-            }
-        } else {
-            userDataDir = config.userDataDir;
-        }
-        if (userDataDir) {
-            args.push("--user-data-dir=" + userDataDir);
-        }
-        args.push("--window-id=" + id);
-        if (config.args) {
-            args.push("--props=\"" + config.args.map((arg) => {
-                return new Buffer(JSON.stringify(arg)).toString("base64");
-            }).join("~") + "\"");
-        }
-        const on = config.on;
-        if (on) {
-            const events = Object.keys(config.on);
-            events.map((event) => {
-                // tslint:disable-next-line:only-arrow-functions space-before-function-paren
-                this.ipc.server.on(id + "_" + event, function (ar: any[]) {
-                    on[event].apply(null, ar);
-                });
-            });
-            args.push("--events=" + events.join(","));
-        }
-        args.push("--id=" + this.id);
+        const args = [modulePath, this.id];
         const child = spawn(electron as any, args, {
             cwd: process.cwd(),
             stdio: "inherit",
@@ -114,6 +97,43 @@ class Orbita {
             }, 1000);
         });
         this.windows[id].proc = child;
+        let userDataDir = "";
+        if (!config.userDataDir) {
+            if (this.config && this.config.userDataDir) {
+                userDataDir = this.config.userDataDir;
+            }
+        } else {
+            userDataDir = config.userDataDir;
+        }
+        const startConfig: IStartConfig = {
+            url: config.url,
+            userDataDir,
+            proxy: config.proxy,
+            windowId: config.id,
+            pages: config.pages.map((page) => {
+                const pageId = config.id + "_" + this.generateId();
+                const events = Object.keys(page.on || {});
+                const on = page.on || {};
+                events.map((event) => {
+                    // tslint:disable-next-line:only-arrow-functions space-before-function-paren
+                    this.ipc.server.on(pageId + "_" + event, function (ar: any[]) {
+                        on[event].apply(null, ar);
+                    });
+                });
+                args.push("--events=" + events.join(","));
+                return {
+                    id: pageId,
+                    matches: page.matches,
+                    module: page.module,
+                    args: page.args,
+                    events,
+                };
+            }),
+        };
+        this.ipc.server.on("inited", () => {
+            this.ipc.server.broadcast("start", startConfig);
+        });
+
     }
     protected removeWindow(id: string) {
         const window = this.windows[id];
