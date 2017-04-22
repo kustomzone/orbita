@@ -29,24 +29,20 @@ class Window {
         let newPage: IStartPageConfig | null = null;
         for (const p of this.config.pages) {
             for (const match of p.matches) {
-                this.ipcClient.emit("log", "reg" + match + ":" + url);
                 const reg = new RegExp(match, "gi");
                 if (reg.test(url)) {
-                    this.ipcClient.emit("log", "hop" + match);
                     newPage = p;
                     break;
                 }
             }
         }
         this.page = newPage;
-        this.ipcClient.emit("log", "finish-load");
         // clear all subscribes
         this.oldEvents.map((event) => this.ipcMain.removeListener(event.name, event.func));
         this.oldEvents = [];
         if (!this.page) {
             return;
         }
-        this.ipcClient.emit("log", "finish" + this.page.module);
         // Load module for page
         const events = this.page.events || [];
         // Subscribe to events
@@ -69,7 +65,6 @@ class Window {
             });
         }
         if (this.page.module) {
-            this.ipcClient.emit("log", "load-script" + this.page.module);
             this.window.webContents.send("load-script", this.page.module, this.page.events || [], this.page.args || []);
         }
     }
