@@ -81,7 +81,7 @@ class Window {
             this.window.webContents.send("load-script", this.page.module, this.page.events || [], this.page.args || []);
         }
         if (isReadyEvent) {
-            this.ipcClient.emit("ready");
+            this.ipcClient.emit(this.page.id + "_" + "ready");
         }
     }
 }
