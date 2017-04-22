@@ -10,6 +10,9 @@ class Module1 extends eventemitter3_1.EventEmitter {
                 window.location.href = "/page2.html";
             }
         }, 100);
+        this.on("hi", (p) => {
+            this.emit("finish", p);
+        });
     }
 }
 exports.default = Module1;

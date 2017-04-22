@@ -3,8 +3,8 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 
 import DefaultWindowOpts from "./default-window-opts";
-import { IStartConfig, IStartPageConfig } from "./Orbita";
-import Window from "./Window";
+import Window from "./ElectronWindow";
+import { IStartConfig } from "./Window";
 import ipcRoot = require("node-ipc");
 const id = process.argv[2];
 const ipc = new ipcRoot.IPC();

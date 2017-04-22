@@ -1,30 +1,20 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-// tslint:disable-next-line:no-reference
-/// <reference path="./typings.d.ts" />
-const child_process_1 = require("child_process");
-const electron = require("electron");
-const ipcRoot = require("node-ipc");
-const modulePath = __dirname + "/start.js";
+const Window_1 = require("./Window");
 class Orbita {
     constructor(config) {
         this.config = config;
         this.windows = {};
-        this.id = "OrbitaIPC_" + this.generateId();
-        const ipc = new ipcRoot.IPC();
-        ipc.config.retry = 1500;
-        ipc.config.id = this.id;
-        ipc.config.silent = true;
-        ipc.serve(null);
-        ipc.server.start();
-        ipc.server.on("log", (...args) => {
-            args.pop();
-            console.log.apply(console, args);
-        });
-        this.ipc = ipc;
     }
     setWindows(windowsConfigs) {
-        const newIds = windowsConfigs.map((config) => config.id);
         let currentIds = Object.keys(this.windows);
         windowsConfigs.map((config) => {
             if (!this.windows[config.id]) {
@@ -36,77 +26,30 @@ class Orbita {
         });
         currentIds.map((id) => this.removeWindow(id));
     }
+    get(id) {
+        return this.windows[id];
+    }
     destroy() {
-        this.setWindows([]);
-        this.ipc.server.stop();
+        return __awaiter(this, void 0, void 0, function* () {
+            const promises = Object.keys(this.windows).map((id) => this.windows[id].destroy());
+            this.setWindows([]);
+            yield Promise.all(promises);
+        });
     }
     addWindow(config) {
-        this.windows[config.id] = {
-            config,
-        };
-        this.startWindow(config.id);
-    }
-    generateId() {
-        return Math.random().toString() + (+new Date()).toString();
-    }
-    startWindow(id) {
-        const config = this.windows[id].config;
-        const args = [modulePath, this.id];
-        const child = child_process_1.spawn(electron, args, {
-            cwd: process.cwd(),
-            stdio: "inherit",
-        });
-        child.on("close", (code) => {
+        this.windows[config.id] = new Window_1.default(config);
+        this.windows[config.id].on("close", () => {
             setTimeout(() => {
                 if (this.windows[config.id]) {
-                    this.startWindow(config.id);
+                    this.windows[config.id].start();
                 }
             }, 1000);
         });
-        this.windows[id].proc = child;
-        let userDataDir = "";
-        if (!config.userDataDir) {
-            if (this.config && this.config.userDataDir) {
-                userDataDir = this.config.userDataDir;
-            }
-        }
-        else {
-            userDataDir = config.userDataDir;
-        }
-        const startConfig = {
-            url: config.url,
-            userDataDir,
-            proxy: config.proxy,
-            windowId: config.id,
-            pages: config.pages.map((page) => {
-                const pageId = config.id + "_" + this.generateId();
-                const events = Object.keys(page.on || {});
-                const on = page.on || {};
-                events.map((event) => {
-                    // tslint:disable-next-line:only-arrow-functions space-before-function-paren
-                    this.ipc.server.on(pageId + "_" + event, function (ar) {
-                        on[event].apply(null, ar);
-                    });
-                });
-                args.push("--events=" + events.join(","));
-                return {
-                    id: pageId,
-                    matches: page.matches,
-                    module: page.module,
-                    args: page.args,
-                    events,
-                };
-            }),
-        };
-        this.ipc.server.on("inited", () => {
-            this.ipc.server.broadcast("start", startConfig);
-        });
+        this.windows[config.id].start();
     }
     removeWindow(id) {
         const window = this.windows[id];
-        if (window.proc) {
-            window.proc.kill();
-        }
+        window.destroy();
         delete this.windows[id];
     }
 }

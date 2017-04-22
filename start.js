@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference path="./typings.d.ts" />
 const electron_1 = require("electron");
 const default_window_opts_1 = require("./default-window-opts");
-const Window_1 = require("./Window");
+const ElectronWindow_1 = require("./ElectronWindow");
 const ipcRoot = require("node-ipc");
 const id = process.argv[2];
 const ipc = new ipcRoot.IPC();
@@ -34,7 +34,7 @@ ipcClient.on("start", (config) => __awaiter(this, void 0, void 0, function* () {
     if (config.proxy) {
         yield setProxy(window.webContents, config.proxy);
     }
-    const pageWindow = new Window_1.default(config, window, electron_1.ipcMain, ipcClient);
+    const pageWindow = new ElectronWindow_1.default(config, window, electron_1.ipcMain, ipcClient);
     pageWindow.run();
 }));
 electron_1.app.once("ready", () => ipcClient.emit("inited"));

@@ -9,6 +9,10 @@ class Module1 extends EventEmitter {
                 window.location.href = "/page2.html";
             }
         }, 100);
+        this.on("hi", (p) => {
+            this.emit("finish", p);
+        });
     }
+
 }
 export default Module1;

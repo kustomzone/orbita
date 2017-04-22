@@ -18,9 +18,7 @@ const wrapper = (f: any, args: any) => {
     params = params.concat(args);
     return f.bind.apply(f, params);
 };
-// tslint:disable:only-arrow-functions
-// tslint:disable:space-before-function-paren
-ipcRenderer.on("load-script", function (e, modulePath, events: string[] = [], args) {
+ipcRenderer.on("load-script", (_, modulePath, events: string[] = [], args) => {
     console.log("load-script");
     try {
         // Hack
@@ -36,9 +34,12 @@ ipcRenderer.on("load-script", function (e, modulePath, events: string[] = [], ar
         const wrapped = wrapper(module, args);
         const emitter = new wrapped();
         events.map((event) => {
-            emitter.on(event, function () {
-                ipcRenderer.send(event, ...arguments);
+            emitter.on(event, (...eventArgs: any[]) => {
+                ipcRenderer.send(event, ...eventArgs);
             });
+        });
+        ipcRenderer.on("emit", (__, opts: { name: string; args: any[] }) => {
+            emitter.emit(opts.name, ...opts.args);
         });
         // Draw dev panel
         emitter.on("panel", (data: any) => {

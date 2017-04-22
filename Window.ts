@@ -1,80 +1,118 @@
-import DefaultLoadUrlOpts from "./default-load-url-opts";
-import { IStartConfig, IStartPageConfig } from "./Orbita";
-type STATE = "start" | "loading" | "ready";
-class Window {
-    protected state: STATE = "start";
-    protected page: IStartPageConfig | null = null;
-    protected oldEvents: Array<{ name: string, func: any }> = [];
-    constructor(
-        protected config: IStartConfig,
-        protected window: Electron.BrowserWindow,
-        protected ipcMain: any,
-        protected ipcClient: any) {
-        this.window.webContents.on("will-navigate", () => {
-            this.state = "start";
+// tslint:disable-next-line:no-reference
+/// <reference path="./typings.d.ts" />
+import ipcRoot = require("node-ipc");
+import electron = require("electron");
+import { ChildProcess, spawn } from "child_process";
+import { EventEmitter } from "events";
+const modulePath = __dirname + "/start.js";
+class Window extends EventEmitter {
+    protected id: string;
+    protected ipc: any;
+    protected child: ChildProcess;
+    constructor(protected config: IWindowConfig) {
+        super();
+        this.id = "OrbitaIPC_" + this.generateId();
+        const ipc = new ipcRoot.IPC();
+        ipc.config.retry = 1500;
+        ipc.config.id = this.id;
+        ipc.config.silent = true;
+        ipc.serve(null);
+        ipc.server.start();
+        ipc.server.on("log", (...args: any[]) => {
+            args.pop();
+            console.log.apply(console, args);
         });
-        this.window.webContents.on("did-finish-load", () => this.newPage());
+        this.ipc = ipc;
     }
-    public async run() {
-        if (this.config.url) {
-            this.window.loadURL(this.config.url, DefaultLoadUrlOpts);
-        }
-    }
-    protected newPage() {
-        if (this.state !== "start") {
-            return;
-        }
-        this.state = "loading";
-        const url = this.window.webContents.getURL();
-        let newPage: IStartPageConfig | null = null;
-        for (const p of this.config.pages) {
-            for (const match of p.matches) {
-                const reg = new RegExp(match, "gi");
-                if (reg.test(url)) {
-                    newPage = p;
-                    break;
-                }
+    public start() {
+        const config = this.config;
+        const args = [modulePath, this.id];
+        const child = spawn(electron as any, args, {
+            cwd: process.cwd(),
+            stdio: "inherit",
+        });
+        child.on("close", (code) => {
+            this.emit("close", "Child process closed with code " + code);
+        });
+        this.child = child;
+        let userDataDir = "";
+        if (!config.userDataDir) {
+            if (this.config && this.config.userDataDir) {
+                userDataDir = this.config.userDataDir;
             }
+        } else {
+            userDataDir = config.userDataDir;
         }
-        this.page = newPage;
-        // clear all subscribes
-        this.oldEvents.map((event) => this.ipcMain.removeListener(event.name, event.func));
-        this.oldEvents = [];
-        if (!this.page) {
-            return;
-        }
-        // Load module for page
-        const events = this.page.events || [];
-        let isReadyEvent = false;
-        // Subscribe to events
-        if (events) {
-            events.map((event) => {
-                if (event === "ready") {
-                    isReadyEvent = true;
-                    return;
-                }
-                const that = this as any;
-                // tslint:disable-next-line:only-arrow-functions space-before-function-paren
-                const func = function (_: any, arg: any) {
-                    const eventArgs = [];
-                    for (let i = 1; i < arguments.length; i++) {
-                        eventArgs.push(arguments[i]);
-                    }
-                    that.ipcClient.emit(that.page.id + "_" + event, eventArgs);
-                };
-                this.oldEvents.push({
-                    name: event,
-                    func,
+        const startConfig: IStartConfig = {
+            url: config.url,
+            userDataDir,
+            proxy: config.proxy,
+            windowId: config.id,
+            pages: config.pages.map((page) => {
+                const pageId = config.id + "_" + this.generateId();
+                const events = Object.keys(page.on || {});
+                const on = page.on || {};
+                events.map((event) => {
+                    // tslint:disable-next-line:only-arrow-functions space-before-function-paren
+                    this.ipc.server.on(pageId + "_" + event, function (ar: any[]) {
+                        on[event].apply(null, ar);
+                    });
                 });
-                this.oldEvents.map((e) => this.ipcMain.on(e.name, e.func));
-            });
-        }
-        if (this.page.module) {
-            this.window.webContents.send("load-script", this.page.module, this.page.events || [], this.page.args || []);
-        }
-        if (isReadyEvent) {
-            this.ipcClient.emit("ready");
-        }
+                return {
+                    id: pageId,
+                    matches: page.matches,
+                    module: page.module,
+                    args: page.args,
+                    events,
+                };
+            }),
+        };
+        this.ipc.server.on("inited", () => {
+            this.ipc.server.broadcast("start", startConfig);
+        });
     }
+    public emit(name: string, ...args: any[]) {
+        this.ipc.server.broadcast("emit", {
+            name,
+            args,
+        });
+        return true;
+    }
+    public destroy() {
+        if (this.child) {
+            this.child.kill();
+        }
+        this.ipc.server.stop();
+    }
+    protected generateId() {
+        return Math.random().toString() + (+new Date()).toString();
+    }
+}
+export interface IWindowConfig {
+    id: string;
+    url: string;
+    proxy?: string;
+    userDataDir?: string;
+    pages: IPageConfig[];
+}
+export interface IPageConfig {
+    matches: string[];
+    module?: string;
+    args?: any[];
+    on?: { [index: string]: (...args: any[]) => void };
+}
+export interface IStartPageConfig {
+    id: string;
+    matches: string[];
+    module?: string;
+    args?: any[];
+    events?: string[];
+}
+export interface IStartConfig {
+    windowId: string;
+    url?: string;
+    userDataDir?: string;
+    proxy?: string;
+    pages: IStartPageConfig[];
 }
 export default Window;

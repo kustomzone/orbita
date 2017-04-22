@@ -1,5 +1,4 @@
-export { default as Orbita, IWindowConfig } from "./Orbita";
-
+export { default as Orbita } from "./Orbita";
 export interface IRenderer {
     remote: Electron.Remote;
 }

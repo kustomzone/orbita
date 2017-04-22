@@ -11,3 +11,11 @@ exports[`when set orbita windows, should open it 4`] = `"y"`;
 exports[`when set orbita windows, should open it 5`] = `2.5`;
 
 exports[`when set orbita windows, should open it 6`] = `"Hello, Page2!"`;
+
+exports[`when set orbita windows, should open it 7`] = `"y"`;
+
+exports[`when set orbita windows, should open it 8`] = `2.5`;
+
+exports[`when set orbita windows, should open it 9`] = `"Hello, Page2!"`;
+
+exports[`when set orbita windows, should open it 10`] = `15`;
