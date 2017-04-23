@@ -37,7 +37,8 @@ class Orbita {
         });
     }
     addWindow(config) {
-        this.windows[config.id] = new Window_1.default(config);
+        const newConfig = Object.assign({}, this.config, config);
+        this.windows[config.id] = new Window_1.default(newConfig);
         this.windows[config.id].on("close", () => {
             setTimeout(() => {
                 if (this.windows[config.id]) {

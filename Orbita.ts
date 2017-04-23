@@ -2,6 +2,7 @@ import Window, { IWindowConfig } from "./Window";
 
 export interface IOrbitaConfig {
     userDataDir?: string;
+    proxy?: string;
 }
 class Orbita {
     protected windows: { [index: string]: Window } = {};
@@ -26,7 +27,8 @@ class Orbita {
         await Promise.all(promises);
     }
     protected addWindow(config: IWindowConfig) {
-        this.windows[config.id] = new Window(config);
+        const newConfig = Object.assign({}, this.config, config);
+        this.windows[config.id] = new Window(newConfig);
         this.windows[config.id].on("close", () => {
             setTimeout(() => {
                 if (this.windows[config.id]) {
