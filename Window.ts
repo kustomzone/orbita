@@ -1,5 +1,3 @@
-// tslint:disable-next-line:no-reference
-/// <reference path="./typings.d.ts" />
 import ipcRoot = require("node-ipc");
 import electron = require("electron");
 import { ChildProcess, spawn } from "child_process";

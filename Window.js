@@ -1,7 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-// tslint:disable-next-line:no-reference
-/// <reference path="./typings.d.ts" />
 const ipcRoot = require("node-ipc");
 const electron = require("electron");
 const child_process_1 = require("child_process");

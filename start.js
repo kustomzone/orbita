@@ -8,8 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// tslint:disable-next-line:no-reference
-/// <reference path="./typings.d.ts" />
 const electron_1 = require("electron");
 const default_window_opts_1 = require("./default-window-opts");
 const ElectronWindow_1 = require("./ElectronWindow");

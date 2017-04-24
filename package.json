@@ -21,6 +21,7 @@
   "dependencies": {
     "@types/electron": "^1.4.34",
     "@types/node": "^7.0.8",
+    "@types/node-ipc": "^9.0.0",
     "electron": "^1.6.2",
     "node-ipc": "^8.10.3"
   },
