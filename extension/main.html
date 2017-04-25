@@ -1,0 +1,20 @@
+test
+<script>
+    console.log("AAA");
+    chrome.devtools.panels.create("Orbita",
+        "abp-40-whitelisted.png",
+        "panel.html",
+        function (panel) {
+
+            //console.log(panel);
+            //panel.evaluatedWindow.eval("console.log('xxx')")
+            // code invoked on panel creation
+            /*chrome.devtools.inspectedWindow.eval(`
+             window['___$___esw']
+            `,function(result, isException) {
+              alert(result, isException)
+            });*/
+        }
+    );
+
+</script>
