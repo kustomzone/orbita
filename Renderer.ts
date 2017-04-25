@@ -2,10 +2,7 @@ import { ipcRenderer, remote } from "electron";
 import sleep from "sleep-es6";
 import ipcRoot = require("node-ipc");
 import Grabber = require("page-grabber");
-export interface IWaitForElementOpts {
-    pollingTimeout: number;
-    failTimeout: number;
-}
+import { IClickOpts, IInputOpts, IWaitForElementOpts } from ".";
 class ElectronWindow {
     protected browserWindow: Electron.BrowserWindow;
     constructor() {
@@ -37,7 +34,7 @@ class ElectronWindow {
                             result = await this.submit(args[0]);
                             break;
                         case "waitForElement":
-                            result = !!(await this.waitForElement(args[0]));
+                            result = !!(await this.waitForElement(args[0], args[1]));
                             break;
                         case "isVisible":
                             result = await this.isVisible(args[0]);
@@ -52,7 +49,7 @@ class ElectronWindow {
     }
     public async waitForElement(
         selector: string,
-        opts?: {[P in keyof IWaitForElementOpts]?: IWaitForElementOpts[P]}): Promise<HTMLElement> {
+        opts?: IWaitForElementOpts): Promise<HTMLElement> {
         opts = opts || {};
         opts.pollingTimeout = opts.pollingTimeout || 10;
         opts.failTimeout = opts.failTimeout || 5000;
@@ -80,20 +77,20 @@ class ElectronWindow {
         }
         return Grabber(window).grab(conf, context);
     }
-    public async click(selector: string) {
-        const el = await this.waitForElement(selector);
+    public async click(selector: string, opts?: IClickOpts) {
+        const el = await this.waitForElement(selector, opts);
         el.click();
     }
-    public async submit(selector: string) {
-        const el = (await this.waitForElement(selector)) as HTMLFormElement;
+    public async submit(selector: string, opts?: IWaitForElementOpts) {
+        const el = (await this.waitForElement(selector, opts)) as HTMLFormElement;
         el.submit();
     }
-    public async input(selector: string, text: string) {
-        const el = (await this.waitForElement(selector)) as HTMLInputElement;
+    public async input(selector: string, text: string, opts?: IInputOpts) {
+        const el = (await this.waitForElement(selector, opts)) as HTMLInputElement;
         el.value = text;
     }
-    public async isVisible(selector: string) {
-        const el = await this.waitForElement(selector);
+    public async isVisible(selector: string, opts?: IWaitForElementOpts) {
+        const el = await this.waitForElement(selector, opts);
         const de = document.documentElement;
         const box = el.getBoundingClientRect();
         const top = box.top + window.pageYOffset - de.clientTop;

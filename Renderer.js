@@ -43,7 +43,7 @@ class ElectronWindow {
                                 result = yield this.submit(args[0]);
                                 break;
                             case "waitForElement":
-                                result = !!(yield this.waitForElement(args[0]));
+                                result = !!(yield this.waitForElement(args[0], args[1]));
                                 break;
                             case "isVisible":
                                 result = yield this.isVisible(args[0]);
@@ -91,27 +91,27 @@ class ElectronWindow {
             return Grabber(window).grab(conf, context);
         });
     }
-    click(selector) {
+    click(selector, opts) {
         return __awaiter(this, void 0, void 0, function* () {
-            const el = yield this.waitForElement(selector);
+            const el = yield this.waitForElement(selector, opts);
             el.click();
         });
     }
-    submit(selector) {
+    submit(selector, opts) {
         return __awaiter(this, void 0, void 0, function* () {
-            const el = (yield this.waitForElement(selector));
+            const el = (yield this.waitForElement(selector, opts));
             el.submit();
         });
     }
-    input(selector, text) {
+    input(selector, text, opts) {
         return __awaiter(this, void 0, void 0, function* () {
-            const el = (yield this.waitForElement(selector));
+            const el = (yield this.waitForElement(selector, opts));
             el.value = text;
         });
     }
-    isVisible(selector) {
+    isVisible(selector, opts) {
         return __awaiter(this, void 0, void 0, function* () {
-            const el = yield this.waitForElement(selector);
+            const el = yield this.waitForElement(selector, opts);
             const de = document.documentElement;
             const box = el.getBoundingClientRect();
             const top = box.top + window.pageYOffset - de.clientTop;

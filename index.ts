@@ -5,3 +5,14 @@ export interface IWindowConfig {
     proxy?: string;
     userAgent?: string;
 }
+export interface IWaitForElementOpts {
+    pollingTimeout?: number;
+    failTimeout?: number;
+}
+export interface IClickOpts extends IWaitForElementOpts {
+    offsetXPercent?: number;
+    offsetYPercent?: number;
+}
+export interface IInputOpts extends IWaitForElementOpts {
+    charTimeout?: number;
+}
