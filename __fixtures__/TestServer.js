@@ -29,7 +29,6 @@ class TestServer {
                     resolve();
                 });
             });
-            console.log("Start http server, address: http://127.0.0.1:" + this.port);
         });
     }
     stop() {

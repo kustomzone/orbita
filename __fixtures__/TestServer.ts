@@ -22,7 +22,6 @@ class TestServer {
                 resolve();
             });
         });
-        console.log("Start http server, address: http://127.0.0.1:" + this.port);
     }
     public async stop() {
         await new Promise((resolve) => this.server.close(resolve));
