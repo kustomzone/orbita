@@ -31,8 +31,8 @@ class Window {
     public async open(url: string): Promise<string> {
         return this.process.callMain("loadURL", url);
     }
-    public async input(selector: string, text: string) {
-        return this.process.callRenderer("input", selector, text);
+    public async input(selector: string, text: string, opts?: IInputOpts) {
+        return this.process.callRenderer("input", selector, text, opts);
     }
     public async grab<T>(conf: T, context?: string): Promise<T> {
         return this.process.callRenderer("grab", conf, context);

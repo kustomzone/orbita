@@ -52,9 +52,9 @@ class Window {
             return this.process.callMain("loadURL", url);
         });
     }
-    input(selector, text) {
+    input(selector, text, opts) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.process.callRenderer("input", selector, text);
+            return this.process.callRenderer("input", selector, text, opts);
         });
     }
     grab(conf, context) {
