@@ -8,34 +8,37 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const sleep_es6_1 = require("sleep-es6");
 const Process_1 = require("./Process");
 class Window {
     constructor(config) {
         this.process = new Process_1.default(config);
     }
-    waitForElement(selector) {
+    waitForElement(selector, opts) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.process.callRenderer("waitForElement", selector);
+            return this.process.callRenderer("waitForElement", selector, opts);
         });
     }
-    click(selector) {
+    click(selector, opts) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.process.callRenderer("click", selector);
+            return this.process.callRenderer("click", selector, opts);
         });
     }
-    submit(selector) {
+    submit(selector, opts) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.process.callRenderer("submit", selector);
+            return this.process.callRenderer("submit", selector, opts);
         });
     }
-    isVisible(selector) {
+    isVisible(selector, opts) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.process.callRenderer("isVisible", selector);
+            return this.process.callRenderer("isVisible", selector, opts);
         });
     }
-    waitForNextPage() {
+    waitForNextPage(opts) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.process.waitForNextPage();
+            const newOpts = opts || {};
+            newOpts.timeout = newOpts.timeout || 10000;
+            yield Promise.race([this.process.waitForNextPage(), sleep_es6_1.default(newOpts.timeout).then(() => Promise.reject("Not loading next page for timeout " + newOpts.timeout))]);
             return this.url();
         });
     }

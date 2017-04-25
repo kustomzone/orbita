@@ -62,7 +62,7 @@ class ElectronWindow {
         return __awaiter(this, void 0, void 0, function* () {
             opts = opts || {};
             opts.pollingTimeout = opts.pollingTimeout || 10;
-            opts.failTimeout = opts.failTimeout || 5000;
+            opts.timeout = opts.timeout || 5000;
             let el;
             const startTime = +new Date();
             do {
@@ -70,8 +70,8 @@ class ElectronWindow {
                 if (el) {
                     return el;
                 }
-                if (startTime < (+new Date()) - opts.failTimeout) {
-                    throw new Error("Not found element by selector " + selector + " after " + opts.failTimeout + "ms");
+                if (startTime < (+new Date()) - opts.timeout) {
+                    throw new Error("Not found element by selector " + selector + " after " + opts.timeout + "ms");
                 }
                 yield sleep_es6_1.default(opts.pollingTimeout);
             } while (!el);
