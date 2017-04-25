@@ -1,6 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var Orbita_1 = require("./Orbita");
-exports.Orbita = Orbita_1.default;
 var Window_1 = require("./Window");
 exports.Window = Window_1.default;
+var page_grabber_1 = require("page-grabber");
+exports.sel = page_grabber_1.sel;
+exports.attr = page_grabber_1.attr;
+exports.obj = page_grabber_1.obj;
+exports.css = page_grabber_1.css;
+exports.val = page_grabber_1.val;
+exports.text = page_grabber_1.text;
+exports.html = page_grabber_1.html;
+exports.child = page_grabber_1.child;
+exports.hasClass = page_grabber_1.hasClass;

@@ -1,10 +1,11 @@
 {
   "name": "orbita",
-  "version": "4.3.6",
-  "description": "Framework for Atom/Electron with reactive windows controller and nanoservice's support",
+  "version": "5.0.0-alpha",
+  "description": "Framework for automated web surfing with Electron for testing or crawling websites. Works as node-process.",
   "main": "index.js",
   "scripts": {
     "test": "tsc && tslint --project=tsconfig.json && jest --verbose --coverage",
+    "jest": "node --trace-warnings node_modules/jest/bin/jest.js --verbose",
     "watch:test": "jest --watch"
   },
   "repository": {
@@ -18,24 +19,29 @@
     "url": "https://github.com/arvitaly/orbita/issues"
   },
   "homepage": "https://github.com/arvitaly/orbita#readme",
-  "dependencies": {
-    "@types/electron": "^1.4.34",
-    "@types/node": "^7.0.8",
-    "@types/node-ipc": "^9.0.0",
-    "electron": "^1.6.2",
-    "node-ipc": "^8.10.3"
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/__fixtures__/"
+    ]
   },
-  "jest": {},
   "devDependencies": {
-    "@types/eventemitter3": "^2.0.2",
     "@types/express": "^4.0.35",
     "@types/jest": "^19.2.2",
-    "coveralls": "^2.12.0",
-    "eventemitter3": "^2.0.3",
+    "coveralls": "^2.13.0",
     "express": "^4.15.2",
     "freeport-es6": "^0.0.1",
     "jest": "^19.0.2",
-    "tslint": "^4.5.1",
-    "typescript": "^2.2.1"
+    "tslint": "^5.1.0",
+    "typescript": "^2.2.2"
+  },
+  "dependencies": {
+    "@types/electron": "^1.4.37",
+    "@types/node": "^7.0.13",
+    "@types/node-ipc": "^9.0.0",
+    "electron": "^1.6.6",
+    "node-ipc": "^9.0.1",
+    "page-grabber": "^0.3.12",
+    "sleep-es6": "^0.0.1"
   }
 }

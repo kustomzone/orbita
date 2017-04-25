@@ -1,5 +1,7 @@
-export { default as Orbita } from "./Orbita";
 export { default as Window } from "./Window";
-export interface IRenderer {
-    remote: Electron.Remote;
+export { sel, attr, obj, css, val, text, html, child, hasClass } from "page-grabber";
+export interface IWindowConfig {
+    userDataDir?: string;
+    proxy?: string;
+    userAgent?: string;
 }

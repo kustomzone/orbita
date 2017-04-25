@@ -1,90 +1,68 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const ipcRoot = require("node-ipc");
-const electron = require("electron");
-const child_process_1 = require("child_process");
-const events_1 = require("events");
-const modulePath = __dirname + "/start.js";
-class Window extends events_1.EventEmitter {
+const Process_1 = require("./Process");
+class Window {
     constructor(config) {
-        super();
-        this.config = config;
-        this.id = "OrbitaIPC_" + this.generateId();
-        const ipc = new ipcRoot.IPC();
-        ipc.config.retry = 1500;
-        ipc.config.id = this.id;
-        ipc.config.silent = true;
-        ipc.serve(null);
-        ipc.server.start();
-        ipc.server.on("log", (...args) => {
-            args.pop();
-            console.log.apply(console, args);
-        });
-        this.ipc = ipc;
+        this.process = new Process_1.default(config);
     }
-    start() {
-        const config = this.config;
-        const args = [modulePath, this.id];
-        const child = child_process_1.spawn(electron, args, {
-            cwd: process.cwd(),
-            stdio: "inherit",
-        });
-        child.on("close", (code) => {
-            this.emit("close", "Child process closed with code " + code);
-        });
-        this.child = child;
-        let userDataDir = "";
-        if (!config.userDataDir) {
-            if (this.config && this.config.userDataDir) {
-                userDataDir = this.config.userDataDir;
-            }
-        }
-        else {
-            userDataDir = config.userDataDir;
-        }
-        const startConfig = {
-            url: config.url,
-            userDataDir,
-            proxy: config.proxy,
-            windowId: config.id,
-            pages: config.pages.map((page) => {
-                const pageId = config.id + "_" + this.generateId();
-                const events = Object.keys(page.on || {});
-                const on = page.on || {};
-                events.map((event) => {
-                    // tslint:disable-next-line:only-arrow-functions space-before-function-paren
-                    this.ipc.server.on(pageId + "_" + event, function (ar) {
-                        on[event].apply(null, ar);
-                    });
-                });
-                return {
-                    id: pageId,
-                    matches: page.matches,
-                    module: page.module,
-                    args: page.args,
-                    events,
-                };
-            }),
-        };
-        this.ipc.server.on("inited", () => {
-            this.ipc.server.broadcast("start", startConfig);
+    waitForElement(selector) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.process.callRenderer("waitForElement", selector);
         });
     }
-    emit(name, ...args) {
-        this.ipc.server.broadcast("emit", {
-            name,
-            args,
+    click(selector) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.process.callRenderer("click", selector);
         });
-        return true;
     }
-    destroy() {
-        if (this.child) {
-            this.child.kill();
-        }
-        this.ipc.server.stop();
+    submit(selector) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.process.callRenderer("submit", selector);
+        });
     }
-    generateId() {
-        return Math.random().toString() + (+new Date()).toString();
+    isVisible(selector) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.process.callRenderer("isVisible", selector);
+        });
+    }
+    waitForNextPage() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.process.waitForNextPage();
+            return this.url();
+        });
+    }
+    url() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.process.callRenderer("url");
+        });
+    }
+    open(url) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.process.callMain("loadURL", url);
+        });
+    }
+    input(selector, text) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.process.callRenderer("input", selector, text);
+        });
+    }
+    grab(conf, context) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.process.callRenderer("grab", conf, context);
+        });
+    }
+    close() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.process.destroy();
+        });
     }
 }
 exports.default = Window;
