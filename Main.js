@@ -29,15 +29,15 @@ class ElectronProcess {
             ipc.of[this.address].on("start", () => {
                 this.startWindow();
             });
-            ipc.of[this.address].on("call", ({ method, args }) => {
+            ipc.of[this.address].on("call", ({ method, args }) => __awaiter(this, void 0, void 0, function* () {
                 try {
-                    const result = this.callMethod(method, args);
+                    const result = yield this.callMethod(method, args);
                     ipc.of[this.address].emit("MainProcessResult", { result });
                 }
                 catch (err) {
                     ipc.of[this.address].emit("MainProcessResult", { err });
                 }
-            });
+            }));
             ipc.of[this.address].emit("MainProcessStarted");
             this.ipc = ipc;
         });
@@ -68,10 +68,12 @@ class ElectronProcess {
             switch (method) {
                 case "loadURL":
                     this.loadURL(args[0]);
-                    this.window.webContents.once("did-finish-load", () => {
-                        return this.window.webContents.getURL();
+                    yield new Promise((resolve) => {
+                        this.loadPromiseResolve = resolve;
                     });
-                    break;
+                    return this.window.webContents.getURL();
+                default:
+                    throw new Error("Invalid method " + method);
             }
         });
     }
@@ -83,6 +85,10 @@ class ElectronProcess {
     }
     realStartRenderer() {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.loadPromiseResolve) {
+                this.loadPromiseResolve();
+                this.loadPromiseResolve = null;
+            }
             this.window.webContents.send("address", this.address);
         });
     }

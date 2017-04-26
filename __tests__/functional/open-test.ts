@@ -31,6 +31,11 @@ it("waitForNextPage", async () => {
     expect(url).toBe("http://127.0.0.1:" + testServer.port + "/page2.html");
     expect(await window.grab(sel("#page2div", text()))).toBe("value2");
 });
+it("open two times", async () => {
+    const url = await window.open("http://127.0.0.1:" + testServer.port + "/page2.html");
+    expect(url).toBe("http://127.0.0.1:" + testServer.port + "/page2.html");
+    expect(await window.grab(sel("#page2div", text()))).toBe("value2");
+});
 afterAll(async () => {
     await window.close();
     await testServer.stop();

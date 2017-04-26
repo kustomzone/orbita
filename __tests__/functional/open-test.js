@@ -41,6 +41,11 @@ it("waitForNextPage", () => __awaiter(this, void 0, void 0, function* () {
     expect(url).toBe("http://127.0.0.1:" + testServer.port + "/page2.html");
     expect(yield window.grab(page_grabber_1.sel("#page2div", page_grabber_1.text()))).toBe("value2");
 }));
+it("open two times", () => __awaiter(this, void 0, void 0, function* () {
+    const url = yield window.open("http://127.0.0.1:" + testServer.port + "/page2.html");
+    expect(url).toBe("http://127.0.0.1:" + testServer.port + "/page2.html");
+    expect(yield window.grab(page_grabber_1.sel("#page2div", page_grabber_1.text()))).toBe("value2");
+}));
 afterAll(() => __awaiter(this, void 0, void 0, function* () {
     yield window.close();
     yield testServer.stop();

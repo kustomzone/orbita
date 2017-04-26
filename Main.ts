@@ -5,6 +5,7 @@ class ElectronProcess {
     protected ipc: any;
     protected stopLoadingTimeoutId: NodeJS.Timer;
     protected id: number;
+    protected loadPromiseResolve: null | (() => void);
     constructor(protected address: string) {
         this.id = process.pid;
     }
@@ -19,9 +20,9 @@ class ElectronProcess {
         ipc.of[this.address].on("start", () => {
             this.startWindow();
         });
-        ipc.of[this.address].on("call", ({ method, args }: any) => {
+        ipc.of[this.address].on("call", async ({ method, args }: any) => {
             try {
-                const result = this.callMethod(method, args);
+                const result = await this.callMethod(method, args);
                 ipc.of[this.address].emit("MainProcessResult", { result });
             } catch (err) {
                 ipc.of[this.address].emit("MainProcessResult", { err });
@@ -53,10 +54,12 @@ class ElectronProcess {
         switch (method) {
             case "loadURL":
                 this.loadURL(args[0]);
-                this.window.webContents.once("did-finish-load", () => {
-                    return this.window.webContents.getURL();
+                await new Promise<void>((resolve) => {
+                    this.loadPromiseResolve = resolve;
                 });
-                break;
+                return this.window.webContents.getURL();
+            default:
+                throw new Error("Invalid method " + method);
         }
     }
     public async loadURL(url: string, opts?: Electron.LoadURLOptions) {
@@ -64,6 +67,10 @@ class ElectronProcess {
         this.window.loadURL(url, newOpts);
     }
     protected async realStartRenderer() {
+        if (this.loadPromiseResolve) {
+            this.loadPromiseResolve();
+            this.loadPromiseResolve = null;
+        }
         this.window.webContents.send("address", this.address);
     }
     protected async startRenderer() {
