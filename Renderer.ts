@@ -13,6 +13,7 @@ class ElectronWindow {
             this.log("connect to", address);
             const ipc = new ipcRoot.IPC();
             ipc.connectTo(address);
+            ipc.config.silent = true;
             ipc.of[address].emit("RendererProcessStarted");
             ipc.of[address].on("call", async ({ method, args }: any) => {
                 try {
