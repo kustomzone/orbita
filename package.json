@@ -1,6 +1,6 @@
 {
   "name": "orbita",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "Framework for automated web surfing with Electron for testing or crawling websites. Works as node-process.",
   "main": "index.js",
   "bin": {
