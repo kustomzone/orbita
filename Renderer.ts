@@ -18,6 +18,10 @@ class ElectronWindow {
                 try {
                     let result: any;
                     switch (method) {
+                        case "evaluate":
+                            // tslint:disable-next-line:no-eval
+                            result = eval(args[0]);
+                            break;
                         case "url":
                             result = window.location.href;
                             break;

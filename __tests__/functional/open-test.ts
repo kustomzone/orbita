@@ -4,7 +4,9 @@ import Window from "./../../Window";
 const testServer = new TestServer();
 let window: Window;
 beforeAll(async () => {
-    window = new Window();
+    window = new Window({
+        userAgent: "ua",
+    });
     await testServer.start();
     await window.open("http://127.0.0.1:" + testServer.port + "/page1.html");
 });
@@ -35,6 +37,14 @@ it("open two times", async () => {
     const url = await window.open("http://127.0.0.1:" + testServer.port + "/page2.html");
     expect(url).toBe("http://127.0.0.1:" + testServer.port + "/page2.html");
     expect(await window.grab(sel("#page2div", text()))).toBe("value2");
+});
+it("evaluate", async () => {
+    await window.open("http://127.0.0.1:" + testServer.port + "/page1.html");
+    const result = await window.evaluate("window.call1()");
+    expect(result).toBe("ho1");
+});
+it("user agent", async () => {
+    expect(await window.evaluate("navigator.userAgent")).toBe("ua");
 });
 afterAll(async () => {
     await window.close();

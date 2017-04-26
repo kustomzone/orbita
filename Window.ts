@@ -6,6 +6,9 @@ class Window {
     constructor(config?: IWindowConfig) {
         this.process = new Process(config);
     }
+    public async evaluate(code: string) {
+        return this.process.callRenderer("evaluate", code);
+    }
     public async waitForElement(selector: string, opts?: IWaitForElementOpts): Promise<void> {
         return this.process.callRenderer("waitForElement", selector, opts);
     }

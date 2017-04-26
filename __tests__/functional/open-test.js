@@ -14,7 +14,9 @@ const Window_1 = require("./../../Window");
 const testServer = new TestServer_1.default();
 let window;
 beforeAll(() => __awaiter(this, void 0, void 0, function* () {
-    window = new Window_1.default();
+    window = new Window_1.default({
+        userAgent: "ua",
+    });
     yield testServer.start();
     yield window.open("http://127.0.0.1:" + testServer.port + "/page1.html");
 }));
@@ -45,6 +47,14 @@ it("open two times", () => __awaiter(this, void 0, void 0, function* () {
     const url = yield window.open("http://127.0.0.1:" + testServer.port + "/page2.html");
     expect(url).toBe("http://127.0.0.1:" + testServer.port + "/page2.html");
     expect(yield window.grab(page_grabber_1.sel("#page2div", page_grabber_1.text()))).toBe("value2");
+}));
+it("evaluate", () => __awaiter(this, void 0, void 0, function* () {
+    yield window.open("http://127.0.0.1:" + testServer.port + "/page1.html");
+    const result = yield window.evaluate("window.call1()");
+    expect(result).toBe("ho1");
+}));
+it("user agent", () => __awaiter(this, void 0, void 0, function* () {
+    expect(yield window.evaluate("navigator.userAgent")).toBe("ua");
 }));
 afterAll(() => __awaiter(this, void 0, void 0, function* () {
     yield window.close();

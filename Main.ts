@@ -1,6 +1,8 @@
 import { app, BrowserWindow } from "electron";
 import ipcRoot = require("node-ipc");
+import { IWindowConfig } from ".";
 class ElectronProcess {
+    protected config: IWindowConfig;
     protected window: Electron.BrowserWindow;
     protected ipc: any;
     protected stopLoadingTimeoutId: NodeJS.Timer;
@@ -17,7 +19,8 @@ class ElectronProcess {
     public async startIPC() {
         const ipc = new ipcRoot.IPC();
         ipc.connectTo(this.address);
-        ipc.of[this.address].on("start", () => {
+        ipc.of[this.address].on("start", (config: IWindowConfig = {}) => {
+            this.config = config;
             this.startWindow();
         });
         ipc.of[this.address].on("call", async ({ method, args }: any) => {
@@ -32,7 +35,13 @@ class ElectronProcess {
         this.ipc = ipc;
     }
     public async startWindow() {
+        if (this.config.userDataDir) {
+            app.setPath("userData", this.config.userDataDir);
+        }
         this.window = new BrowserWindow(defaultWindowOpts);
+        if (this.config.proxy) {
+            await this.setProxy(this.window.webContents, this.config.proxy);
+        }
         this.window.webContents.openDevTools({ mode: "right" });
         // For every loaded page, send address of ipc-server
         this.window.webContents.on("did-finish-load", () => {
@@ -50,6 +59,13 @@ class ElectronProcess {
             }
         });
     }
+    public async setProxy(webContents: Electron.WebContents, proxy: string) {
+        return new Promise((resolve) => {
+            webContents.session.setProxy({ proxyRules: proxy } as any, () => {
+                resolve();
+            });
+        });
+    }
     public async callMethod(method: string, args: any) {
         switch (method) {
             case "loadURL":
@@ -63,7 +79,10 @@ class ElectronProcess {
         }
     }
     public async loadURL(url: string, opts?: Electron.LoadURLOptions) {
-        const newOpts = Object.assign({}, defaultUrlOpts, opts || {});
+        const newOpts = Object.assign({},
+            defaultUrlOpts,
+            this.config.userAgent ? { userAgent: this.config.userAgent } : {},
+            opts || {});
         this.window.loadURL(url, newOpts);
     }
     protected async realStartRenderer() {

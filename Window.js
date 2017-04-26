@@ -14,6 +14,11 @@ class Window {
     constructor(config) {
         this.process = new Process_1.default(config);
     }
+    evaluate(code) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.process.callRenderer("evaluate", code);
+        });
+    }
     waitForElement(selector, opts) {
         return __awaiter(this, void 0, void 0, function* () {
             return this.process.callRenderer("waitForElement", selector, opts);

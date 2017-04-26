@@ -43,7 +43,7 @@ class Process {
         });
         this.ipc.server.on("MainProcessStarted", (_, socket) => {
             this.mainSocket = socket;
-            this.ipc.server.emit(socket, "start");
+            this.ipc.server.emit(socket, "start", this.config);
             this.ipcMainReadyPromise = null;
             resolveMain();
             socket.on("close", () => {

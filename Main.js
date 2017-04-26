@@ -26,7 +26,8 @@ class ElectronProcess {
         return __awaiter(this, void 0, void 0, function* () {
             const ipc = new ipcRoot.IPC();
             ipc.connectTo(this.address);
-            ipc.of[this.address].on("start", () => {
+            ipc.of[this.address].on("start", (config = {}) => {
+                this.config = config;
                 this.startWindow();
             });
             ipc.of[this.address].on("call", ({ method, args }) => __awaiter(this, void 0, void 0, function* () {
@@ -44,7 +45,13 @@ class ElectronProcess {
     }
     startWindow() {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.config.userDataDir) {
+                electron_1.app.setPath("userData", this.config.userDataDir);
+            }
             this.window = new electron_1.BrowserWindow(defaultWindowOpts);
+            if (this.config.proxy) {
+                yield this.setProxy(this.window.webContents, this.config.proxy);
+            }
             this.window.webContents.openDevTools({ mode: "right" });
             // For every loaded page, send address of ipc-server
             this.window.webContents.on("did-finish-load", () => {
@@ -60,6 +67,15 @@ class ElectronProcess {
                 if (this.stopLoadingTimeoutId) {
                     clearTimeout(this.stopLoadingTimeoutId);
                 }
+            });
+        });
+    }
+    setProxy(webContents, proxy) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve) => {
+                webContents.session.setProxy({ proxyRules: proxy }, () => {
+                    resolve();
+                });
             });
         });
     }
@@ -79,7 +95,7 @@ class ElectronProcess {
     }
     loadURL(url, opts) {
         return __awaiter(this, void 0, void 0, function* () {
-            const newOpts = Object.assign({}, defaultUrlOpts, opts || {});
+            const newOpts = Object.assign({}, defaultUrlOpts, this.config.userAgent ? { userAgent: this.config.userAgent } : {}, opts || {});
             this.window.loadURL(url, newOpts);
         });
     }
