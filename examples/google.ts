@@ -7,7 +7,9 @@ async function start() {
     await window.submit("form.tsf");
     await window.waitForNextPage();
     const links = await window.grab(sel("div.g", []));
-    console.log("Number of links: " + links.length);
+    if (links) {
+        console.log("Number of links: " + links.length);
+    }
     await window.close();
 }
 start();

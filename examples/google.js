@@ -18,7 +18,9 @@ function start() {
         yield window.submit("form.tsf");
         yield window.waitForNextPage();
         const links = yield window.grab(__1.sel("div.g", []));
-        console.log("Number of links: " + links.length);
+        if (links) {
+            console.log("Number of links: " + links.length);
+        }
         yield window.close();
     });
 }
