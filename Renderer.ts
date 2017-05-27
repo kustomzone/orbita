@@ -9,7 +9,7 @@ class ElectronWindow {
         this.browserWindow = remote.getCurrentWindow();
     }
     public async start() {
-        ipcRenderer.once("address", (_, address) => {
+        ipcRenderer.once("address", (_: any, address: string) => {
             this.log("connect to", address);
             const ipc = new ipcRoot.IPC();
             ipc.connectTo(address);
