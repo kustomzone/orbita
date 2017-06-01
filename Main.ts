@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, session } from "electron";
 import ipcRoot = require("node-ipc");
 import { IWindowConfig } from ".";
 class ElectronProcess {
@@ -8,6 +8,7 @@ class ElectronProcess {
     protected stopLoadingTimeoutId: NodeJS.Timer;
     protected id: number;
     protected loadPromiseResolve: null | (() => void);
+    protected lastBeforeSendCallback: any;
     constructor(protected address: string) {
         this.id = process.pid;
     }
@@ -74,6 +75,22 @@ class ElectronProcess {
                     this.loadPromiseResolve = resolve;
                 });
                 return this.window.webContents.getURL();
+            case "beforeSendHeaders":
+                const filter = args[0];
+                const defaultSession = session.defaultSession;
+                if (!defaultSession) {
+                    throw new Error("Session not exists");
+                }
+                return await new Promise((resolve) => {
+                    defaultSession.webRequest.onBeforeSendHeaders(filter, (details: any, cb: any) => {
+                        this.lastBeforeSendCallback = cb;
+                        resolve(details);
+                    });
+                });
+            case "resolveBeforeSendHeaders":
+                const res = args[0];
+                this.lastBeforeSendCallback(res);
+                return;
             default:
                 throw new Error("Invalid method " + method);
         }

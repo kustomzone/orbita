@@ -88,6 +88,22 @@ class ElectronProcess {
                         this.loadPromiseResolve = resolve;
                     });
                     return this.window.webContents.getURL();
+                case "beforeSendHeaders":
+                    const filter = args[0];
+                    const defaultSession = electron_1.session.defaultSession;
+                    if (!defaultSession) {
+                        throw new Error("Session not exists");
+                    }
+                    return yield new Promise((resolve) => {
+                        defaultSession.webRequest.onBeforeSendHeaders(filter, (details, cb) => {
+                            this.lastBeforeSendCallback = cb;
+                            resolve(details);
+                        });
+                    });
+                case "resolveBeforeSendHeaders":
+                    const res = args[0];
+                    this.lastBeforeSendCallback(res);
+                    return;
                 default:
                     throw new Error("Invalid method " + method);
             }

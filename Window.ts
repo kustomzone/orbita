@@ -21,6 +21,24 @@ class Window {
     public async isVisible(selector: string, opts?: IWaitForElementOpts): Promise<boolean> {
         return this.process.callRenderer("isVisible", selector, opts);
     }
+    public async beforeSendHeaders(
+        urls: string[],
+        cb: (details: {
+            id: number;
+            method: string;
+            referrer: string;
+            resourceType: string;
+            requestHeaders: { [index: string]: string };
+            timestamp: number;
+            url: string;
+        }) => {
+                cancel: boolean, requestHeaders?: {
+                    [index: string]: string;
+                };
+            }): Promise<void> {
+        const details = await this.process.callMain("beforeSendHeaders", urls);
+        await this.process.callMain("resolveBeforeSendHeaders", cb(details));
+    }
     public async waitForNextPage(opts?: ICommandOpts): Promise<string> {
         const newOpts = opts || {};
         newOpts.timeout = newOpts.timeout || 10000;

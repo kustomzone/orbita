@@ -39,6 +39,12 @@ class Window {
             return this.process.callRenderer("isVisible", selector, opts);
         });
     }
+    beforeSendHeaders(urls, cb) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const details = yield this.process.callMain("beforeSendHeaders", urls);
+            yield this.process.callMain("resolveBeforeSendHeaders", cb(details));
+        });
+    }
     waitForNextPage(opts) {
         return __awaiter(this, void 0, void 0, function* () {
             const newOpts = opts || {};
