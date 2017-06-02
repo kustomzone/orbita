@@ -137,7 +137,8 @@ class Process {
         });
     }
     startElectron() {
-        this.child = child_process_1.spawn((this.config.runWithXvfb ? "xvfb-run -a " : "") + electron, [processPath, this.address], {
+        const runWithXvfbForUnix = typeof (this.config.runWithXvfbForUnix) === "undefined" ? true : this.config.runWithXvfbForUnix;
+        this.child = child_process_1.spawn((runWithXvfbForUnix ? "xvfb-run -a " : "") + electron, [processPath, this.address], {
             cwd: process.cwd(),
             stdio: "inherit",
         });

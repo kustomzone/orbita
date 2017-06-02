@@ -130,7 +130,9 @@ class Process {
         this.ipc.server.stop();
     }
     protected startElectron() {
-        this.child = spawn((this.config.runWithXvfb ? "xvfb-run -a " : "") + electron as any,
+        const runWithXvfbForUnix =
+            typeof (this.config.runWithXvfbForUnix) === "undefined" ? true : this.config.runWithXvfbForUnix;
+        this.child = spawn((runWithXvfbForUnix ? "xvfb-run -a " : "") + electron as any,
             [processPath, this.address], {
                 cwd: process.cwd(),
                 stdio: "inherit",
