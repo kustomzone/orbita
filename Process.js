@@ -140,10 +140,18 @@ class Process {
         let runWithXvfbForUnix = typeof (this.config.runWithXvfbForUnix) === "undefined" ? true : this.config.runWithXvfbForUnix;
         const isWin = /^win/.test(process.platform);
         runWithXvfbForUnix = isWin ? false : runWithXvfbForUnix;
-        this.child = child_process_1.spawn((runWithXvfbForUnix ? "xvfb-run -a " : "") + electron, [processPath, this.address], {
-            cwd: process.cwd(),
-            stdio: "inherit",
-        });
+        if (runWithXvfbForUnix) {
+            this.child = child_process_1.spawn("xvfb-run", ["-a", electron, processPath, this.address], {
+                cwd: process.cwd(),
+                stdio: "inherit",
+            });
+        }
+        else {
+            this.child = child_process_1.spawn(electron, [processPath, this.address], {
+                cwd: process.cwd(),
+                stdio: "inherit",
+            });
+        }
         this.child.on("error", (err) => __awaiter(this, void 0, void 0, function* () {
             if (!this.isDestroyed) {
                 console.error(err);
