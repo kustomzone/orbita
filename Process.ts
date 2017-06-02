@@ -130,10 +130,11 @@ class Process {
         this.ipc.server.stop();
     }
     protected startElectron() {
-        this.child = spawn(electron as any, [processPath, this.address], {
-            cwd: process.cwd(),
-            stdio: "inherit",
-        });
+        this.child = spawn((this.config.runWithXvfb ? "xvfb-run -a " : "") + electron as any,
+            [processPath, this.address], {
+                cwd: process.cwd(),
+                stdio: "inherit",
+            });
         this.child.on("error", async (err) => {
             if (!this.isDestroyed) {
                 console.error(err);

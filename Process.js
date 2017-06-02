@@ -137,7 +137,7 @@ class Process {
         });
     }
     startElectron() {
-        this.child = child_process_1.spawn(electron, [processPath, this.address], {
+        this.child = child_process_1.spawn((this.config.runWithXvfb ? "xvfb-run -a " : "") + electron, [processPath, this.address], {
             cwd: process.cwd(),
             stdio: "inherit",
         });

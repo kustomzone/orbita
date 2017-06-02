@@ -4,6 +4,7 @@ export interface IWindowConfig {
     userDataDir?: string;
     proxy?: string;
     userAgent?: string;
+    runWithXvfb?: boolean;
 }
 export interface ICommandOpts {
     timeout?: number;
