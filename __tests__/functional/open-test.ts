@@ -10,6 +10,9 @@ beforeAll(async () => {
     await testServer.start();
     await window.open("http://127.0.0.1:" + testServer.port + "/page1.html");
 });
+it("url", async () => {
+    expect(await window.url()).toBe("http://127.0.0.1:" + testServer.port + "/page1.html");
+});
 it("grab", async () => {
     expect(await window.grab(sel("#div1", text()))).toBe("test1");
 });

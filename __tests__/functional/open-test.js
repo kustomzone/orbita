@@ -20,6 +20,9 @@ beforeAll(() => __awaiter(this, void 0, void 0, function* () {
     yield testServer.start();
     yield window.open("http://127.0.0.1:" + testServer.port + "/page1.html");
 }));
+it("url", () => __awaiter(this, void 0, void 0, function* () {
+    expect(yield window.url()).toBe("http://127.0.0.1:" + testServer.port + "/page1.html");
+}));
 it("grab", () => __awaiter(this, void 0, void 0, function* () {
     expect(yield window.grab(page_grabber_1.sel("#div1", page_grabber_1.text()))).toBe("test1");
 }));
