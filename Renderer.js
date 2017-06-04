@@ -12,6 +12,7 @@ const electron_1 = require("electron");
 const sleep_es6_1 = require("sleep-es6");
 const ipcRoot = require("node-ipc");
 const Grabber = require("page-grabber");
+const oldStartsWith = String.prototype.startsWith;
 class ElectronWindow {
     constructor() {
         this.browserWindow = electron_1.remote.getCurrentWindow();
@@ -19,49 +20,57 @@ class ElectronWindow {
     start() {
         return __awaiter(this, void 0, void 0, function* () {
             electron_1.ipcRenderer.once("address", (_, address) => {
-                this.log("connect to", address);
-                const ipc = new ipcRoot.IPC();
-                ipc.connectTo(address);
-                ipc.config.silent = true;
-                ipc.of[address].emit("RendererProcessStarted");
-                ipc.of[address].on("call", ({ method, args }) => __awaiter(this, void 0, void 0, function* () {
-                    this.log("call", address, method, args);
-                    try {
-                        let result;
-                        switch (method) {
-                            case "evaluate":
-                                // tslint:disable-next-line:no-eval
-                                result = eval(args[0]);
-                                break;
-                            case "url":
-                                result = window.location.href;
-                                break;
-                            case "grab":
-                                result = yield this.grab(args[0], args[1]);
-                                break;
-                            case "input":
-                                result = yield this.input(args[0], args[1]);
-                                break;
-                            case "click":
-                                result = yield this.click(args[0]);
-                                break;
-                            case "submit":
-                                result = yield this.submit(args[0]);
-                                break;
-                            case "waitForElement":
-                                result = !!(yield this.waitForElement(args[0], args[1]));
-                                break;
-                            case "isVisible":
-                                result = yield this.isVisible(args[0]);
-                                break;
+                try {
+                    const newStartsWith = String.prototype.startsWith;
+                    String.prototype.startsWith = oldStartsWith;
+                    this.log("connect to", address);
+                    const ipc = new ipcRoot.IPC();
+                    ipc.connectTo(address);
+                    ipc.config.silent = true;
+                    ipc.of[address].emit("RendererProcessStarted");
+                    ipc.of[address].on("call", ({ method, args }) => __awaiter(this, void 0, void 0, function* () {
+                        this.log("call", address, method, args);
+                        try {
+                            let result;
+                            switch (method) {
+                                case "evaluate":
+                                    // tslint:disable-next-line:no-eval
+                                    result = eval(args[0]);
+                                    break;
+                                case "url":
+                                    result = window.location.href;
+                                    break;
+                                case "grab":
+                                    result = yield this.grab(args[0], args[1]);
+                                    break;
+                                case "input":
+                                    result = yield this.input(args[0], args[1]);
+                                    break;
+                                case "click":
+                                    result = yield this.click(args[0]);
+                                    break;
+                                case "submit":
+                                    result = yield this.submit(args[0]);
+                                    break;
+                                case "waitForElement":
+                                    result = !!(yield this.waitForElement(args[0], args[1]));
+                                    break;
+                                case "isVisible":
+                                    result = yield this.isVisible(args[0]);
+                                    break;
+                            }
+                            this.log("RendererProcessResult", address, method, args, result);
+                            ipc.of[address].emit("RendererProcessResult", { result });
                         }
-                        this.log("RendererProcessResult", address, method, args, result);
-                        ipc.of[address].emit("RendererProcessResult", { result });
-                    }
-                    catch (err) {
-                        ipc.of[address].emit("RendererProcessResult", { err });
-                    }
-                }));
+                        catch (err) {
+                            ipc.of[address].emit("RendererProcessResult", { err });
+                        }
+                    }));
+                    String.prototype.startsWith = newStartsWith;
+                }
+                catch (e) {
+                    console.error(e);
+                }
             });
         });
     }

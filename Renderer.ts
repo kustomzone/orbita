@@ -3,6 +3,7 @@ import sleep from "sleep-es6";
 import ipcRoot = require("node-ipc");
 import Grabber = require("page-grabber");
 import { IClickOpts, IInputOpts, IWaitForElementOpts } from ".";
+const oldStartsWith = String.prototype.startsWith;
 class ElectronWindow {
     protected browserWindow: Electron.BrowserWindow;
     constructor() {
@@ -10,48 +11,55 @@ class ElectronWindow {
     }
     public async start() {
         ipcRenderer.once("address", (_: any, address: string) => {
-            this.log("connect to", address);
-            const ipc = new ipcRoot.IPC();
-            ipc.connectTo(address);
-            ipc.config.silent = true;
-            ipc.of[address].emit("RendererProcessStarted");
-            ipc.of[address].on("call", async ({ method, args }: any) => {
-                this.log("call", address, method, args);
-                try {
-                    let result: any;
-                    switch (method) {
-                        case "evaluate":
-                            // tslint:disable-next-line:no-eval
-                            result = eval(args[0]);
-                            break;
-                        case "url":
-                            result = window.location.href;
-                            break;
-                        case "grab":
-                            result = await this.grab(args[0], args[1]);
-                            break;
-                        case "input":
-                            result = await this.input(args[0], args[1]);
-                            break;
-                        case "click":
-                            result = await this.click(args[0]);
-                            break;
-                        case "submit":
-                            result = await this.submit(args[0]);
-                            break;
-                        case "waitForElement":
-                            result = !!(await this.waitForElement(args[0], args[1]));
-                            break;
-                        case "isVisible":
-                            result = await this.isVisible(args[0]);
-                            break;
+            try {
+                const newStartsWith = String.prototype.startsWith;
+                String.prototype.startsWith = oldStartsWith;
+                this.log("connect to", address);
+                const ipc = new ipcRoot.IPC();
+                ipc.connectTo(address);
+                ipc.config.silent = true;
+                ipc.of[address].emit("RendererProcessStarted");
+                ipc.of[address].on("call", async ({ method, args }: any) => {
+                    this.log("call", address, method, args);
+                    try {
+                        let result: any;
+                        switch (method) {
+                            case "evaluate":
+                                // tslint:disable-next-line:no-eval
+                                result = eval(args[0]);
+                                break;
+                            case "url":
+                                result = window.location.href;
+                                break;
+                            case "grab":
+                                result = await this.grab(args[0], args[1]);
+                                break;
+                            case "input":
+                                result = await this.input(args[0], args[1]);
+                                break;
+                            case "click":
+                                result = await this.click(args[0]);
+                                break;
+                            case "submit":
+                                result = await this.submit(args[0]);
+                                break;
+                            case "waitForElement":
+                                result = !!(await this.waitForElement(args[0], args[1]));
+                                break;
+                            case "isVisible":
+                                result = await this.isVisible(args[0]);
+                                break;
+                        }
+                        this.log("RendererProcessResult", address, method, args, result);
+                        ipc.of[address].emit("RendererProcessResult", { result });
+                    } catch (err) {
+                        ipc.of[address].emit("RendererProcessResult", { err });
                     }
-                    this.log("RendererProcessResult", address, method, args, result);
-                    ipc.of[address].emit("RendererProcessResult", { result });
-                } catch (err) {
-                    ipc.of[address].emit("RendererProcessResult", { err });
-                }
-            });
+                });
+                String.prototype.startsWith = newStartsWith;
+            } catch (e) {
+                console.error(e);
+            }
         });
     }
     public async waitForElement(
