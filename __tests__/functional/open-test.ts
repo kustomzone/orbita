@@ -46,6 +46,16 @@ it("evaluate", async () => {
 it("user agent", async () => {
     expect(await window.evaluate("navigator.userAgent")).toBe("ua");
 });
+(jasmine as any).DEFAULT_TIMEOUT_INTERVAL = 10000;
+it("evaluate 2 windows", async () => {
+    await window.open("http://127.0.0.1:" + testServer.port + "/page1.html");
+    const window2 = new Window();
+    await window2.open("http://127.0.0.1:" + testServer.port + "/page1.html");
+    const results = await Promise.all([window2.evaluate("window.call1()")]);
+    expect(results).toEqual(["ho1"]);
+    await window2.close();
+
+});
 afterAll(async () => {
     await window.close();
     await testServer.stop();

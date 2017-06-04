@@ -43,6 +43,13 @@ class ElectronProcess {
         if (this.config.proxy) {
             await this.setProxy(this.window.webContents, this.config.proxy);
         }
+        this.window.webContents.on("destroyed", () => {
+            this.ipc.of[this.address].emit("log", "destroyed");
+        });
+        this.window.webContents.on("crashed", () => {
+            this.ipc.of[this.address].emit("log", "crashed");
+        });
+
         this.window.webContents.openDevTools({ mode: "right" });
         // For every loaded page, send address of ipc-server
         this.window.webContents.on("did-finish-load", () => {

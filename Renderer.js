@@ -25,6 +25,7 @@ class ElectronWindow {
                 ipc.config.silent = true;
                 ipc.of[address].emit("RendererProcessStarted");
                 ipc.of[address].on("call", ({ method, args }) => __awaiter(this, void 0, void 0, function* () {
+                    this.log("call", address, method, args);
                     try {
                         let result;
                         switch (method) {
@@ -54,6 +55,7 @@ class ElectronWindow {
                                 result = yield this.isVisible(args[0]);
                                 break;
                         }
+                        this.log("RendererProcessResult", address, method, args, result);
                         ipc.of[address].emit("RendererProcessResult", { result });
                     }
                     catch (err) {

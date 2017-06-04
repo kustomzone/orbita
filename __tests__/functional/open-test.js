@@ -56,6 +56,15 @@ it("evaluate", () => __awaiter(this, void 0, void 0, function* () {
 it("user agent", () => __awaiter(this, void 0, void 0, function* () {
     expect(yield window.evaluate("navigator.userAgent")).toBe("ua");
 }));
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+it("evaluate 2 windows", () => __awaiter(this, void 0, void 0, function* () {
+    yield window.open("http://127.0.0.1:" + testServer.port + "/page1.html");
+    const window2 = new Window_1.default();
+    yield window2.open("http://127.0.0.1:" + testServer.port + "/page1.html");
+    const results = yield Promise.all([window2.evaluate("window.call1()")]);
+    expect(results).toEqual(["ho1"]);
+    yield window2.close();
+}));
 afterAll(() => __awaiter(this, void 0, void 0, function* () {
     yield window.close();
     yield testServer.stop();
