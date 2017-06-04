@@ -62,7 +62,7 @@ class Process {
         this._destroy();
     }
     protected async start() {
-        this.createIPCServer();
+        await this.createIPCServer();
         this.startElectron();
         // wait for start main process
         await select(
@@ -122,12 +122,12 @@ class Process {
             }
         }
     }
-    protected createIPCServer() {
+    protected async createIPCServer() {
         const ipc = new IPCRoot.IPC();
         ipc.config.id = this.address;
         ipc.config.silent = true;
         ipc.config.sync = true;
-        ipc.serve();
+        const promise = new Promise((resolve) => ipc.serve(resolve));
         ipc.server.start();
         this.ipc = ipc;
         this.ipc.server.on("log", (...args: any[]) => {
@@ -146,6 +146,7 @@ class Process {
         this.ipc.server.on("RendererProcessResult", ({ err, result }: any) => {
             this.rendererProcessResultChan.put({ err, result });
         });
+        return promise;
     }
     protected _callMain(method: string, args: any[]) {
         this.ipc.server.emit(this.mainSocket, "call", { method, args });
@@ -162,7 +163,9 @@ class Process {
         this.isDestroyed = true;
         this.callMainChan.clear();
         this.callRendererChan.clear();
-        this.ipc.server.stop();
+        if (this.ipc.server) {
+            this.ipc.server.stop();
+        }
         if (this.child) {
             this.child.kill();
         }

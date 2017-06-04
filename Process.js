@@ -67,7 +67,7 @@ class Process {
     }
     start() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.createIPCServer();
+            yield this.createIPCServer();
             this.startElectron();
             // wait for start main process
             yield chan2_1.select(this.childErrorChan.wait((err) => this.error(err)), this.mainProcessStartedChan.wait((socket) => {
@@ -114,28 +114,31 @@ class Process {
         });
     }
     createIPCServer() {
-        const ipc = new IPCRoot.IPC();
-        ipc.config.id = this.address;
-        ipc.config.silent = true;
-        ipc.config.sync = true;
-        ipc.serve();
-        ipc.server.start();
-        this.ipc = ipc;
-        this.ipc.server.on("log", (...args) => {
-            args.pop();
-            console.log.apply(console, args);
-        });
-        this.ipc.server.on("MainProcessStarted", (_, socket) => {
-            this.mainProcessStartedChan.put(socket);
-        });
-        this.ipc.server.on("RendererProcessStarted", (_, socket) => {
-            this.rendererProcessStarted.put(socket);
-        });
-        this.ipc.server.on("MainProcessResult", ({ err, result }) => {
-            this.mainProcessResultChan.put({ err, result });
-        });
-        this.ipc.server.on("RendererProcessResult", ({ err, result }) => {
-            this.rendererProcessResultChan.put({ err, result });
+        return __awaiter(this, void 0, void 0, function* () {
+            const ipc = new IPCRoot.IPC();
+            ipc.config.id = this.address;
+            ipc.config.silent = true;
+            ipc.config.sync = true;
+            const promise = new Promise((resolve) => ipc.serve(resolve));
+            ipc.server.start();
+            this.ipc = ipc;
+            this.ipc.server.on("log", (...args) => {
+                args.pop();
+                console.log.apply(console, args);
+            });
+            this.ipc.server.on("MainProcessStarted", (_, socket) => {
+                this.mainProcessStartedChan.put(socket);
+            });
+            this.ipc.server.on("RendererProcessStarted", (_, socket) => {
+                this.rendererProcessStarted.put(socket);
+            });
+            this.ipc.server.on("MainProcessResult", ({ err, result }) => {
+                this.mainProcessResultChan.put({ err, result });
+            });
+            this.ipc.server.on("RendererProcessResult", ({ err, result }) => {
+                this.rendererProcessResultChan.put({ err, result });
+            });
+            return promise;
         });
     }
     _callMain(method, args) {
@@ -153,7 +156,9 @@ class Process {
         this.isDestroyed = true;
         this.callMainChan.clear();
         this.callRendererChan.clear();
-        this.ipc.server.stop();
+        if (this.ipc.server) {
+            this.ipc.server.stop();
+        }
         if (this.child) {
             this.child.kill();
         }
