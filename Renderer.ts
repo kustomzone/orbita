@@ -1,3 +1,4 @@
+import makechan, { Chan } from "chan2";
 import { ipcRenderer, remote } from "electron";
 import sleep from "sleep-es6";
 import ipcRoot = require("node-ipc");
@@ -6,6 +7,7 @@ import { IClickOpts, IInputOpts, IWaitForElementOpts } from ".";
 const oldStartsWith = String.prototype.startsWith;
 class ElectronWindow {
     protected browserWindow: Electron.BrowserWindow;
+    protected modelChan: Chan<any>;
     constructor() {
         this.browserWindow = remote.getCurrentWindow();
     }
@@ -49,6 +51,12 @@ class ElectronWindow {
                             case "isVisible":
                                 result = await this.isVisible(args[0]);
                                 break;
+                            case "startRecordModel":
+                                result = await this.startRecordModel(args[0], args[1], args[2]);
+                                break;
+                            case "getNextData":
+                                result = await this.getNextData();
+                                break;
                         }
                         this.log("RendererProcessResult", address, method, args, result);
                         ipc.of[address].emit("RendererProcessResult", { result });
@@ -82,7 +90,32 @@ class ElectronWindow {
         } while (!el);
         return el;
     }
-    public async grab(conf: any, contextString?: string) {
+    public async startRecordModel(conf: any, contextString?: string, opts?: { pollingTimeout: number }) {
+        opts = opts || { pollingTimeout: 50 };
+        this.modelChan = makechan();
+        let oldJsonData = null;
+        (async () => {
+            while (true) {
+                const data = this.grab(conf, contextString);
+                if (data === null) {
+                    await sleep(opts.pollingTimeout);
+                    continue;
+                }
+                const jsonData = JSON.stringify(data);
+                if (jsonData === oldJsonData) {
+                    await sleep(opts.pollingTimeout);
+                    continue;
+                }
+                oldJsonData = jsonData;
+                this.modelChan.put(data);
+                await sleep(opts.pollingTimeout);
+            }
+        })();
+    }
+    public async getNextData() {
+        return this.modelChan.get();
+    }
+    public grab(conf: any, contextString?: string) {
         let context: any;
         if (contextString) {
             // tslint:disable-next-line:no-eval

@@ -73,6 +73,16 @@ class Window {
             return this.process.callRenderer("grab", conf, context);
         });
     }
+    startRecordModel(conf, context, opts) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.process.callRenderer("startRecordModel", conf, context, opts);
+        });
+    }
+    getNextData() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.process.callRenderer("getNextData");
+        });
+    }
     close() {
         return __awaiter(this, void 0, void 0, function* () {
             this.process.destroy();

@@ -1,4 +1,5 @@
 import { sel, text, val } from "page-grabber";
+import sleep from "sleep-es6";
 import TestServer from "./../../__fixtures__/TestServer";
 import Window from "./../../Window";
 const testServer = new TestServer();
@@ -58,6 +59,15 @@ it("evaluate 2 windows", async () => {
     expect(results).toEqual(["ho1"]);
     await window2.close();
 
+});
+it("subscribe", async () => {
+    await window.open("http://127.0.0.1:" + testServer.port + "/page3.html");
+    await window.startRecordModel({ value: sel("#div1", text()) }, "window", { pollingTimeout: 50 });
+    await sleep(500);
+    const lastValue = (await window.getNextData());
+    expect(lastValue.value > 10).toBeTruthy();
+    await sleep(500);
+    expect((await window.getNextData()).value + 10 > lastValue.value).toBeTruthy();
 });
 afterAll(async () => {
     await window.close();

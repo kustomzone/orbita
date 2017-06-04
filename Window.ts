@@ -58,6 +58,12 @@ class Window {
     public async grab<T>(conf: T, context?: string): Promise<T> {
         return this.process.callRenderer("grab", conf, context);
     }
+    public async startRecordModel<T>(conf: T, context?: string, opts?: { pollingTimeout: number }): Promise<void> {
+        return this.process.callRenderer("startRecordModel", conf, context, opts);
+    }
+    public async getNextData(): Promise<any> {
+        return this.process.callRenderer("getNextData");
+    }
     public async close() {
         this.process.destroy();
     }

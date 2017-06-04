@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const chan2_1 = require("chan2");
 const electron_1 = require("electron");
 const sleep_es6_1 = require("sleep-es6");
 const ipcRoot = require("node-ipc");
@@ -58,6 +59,12 @@ class ElectronWindow {
                                 case "isVisible":
                                     result = yield this.isVisible(args[0]);
                                     break;
+                                case "startRecordModel":
+                                    result = yield this.startRecordModel(args[0], args[1], args[2]);
+                                    break;
+                                case "getNextData":
+                                    result = yield this.getNextData();
+                                    break;
                             }
                             this.log("RendererProcessResult", address, method, args, result);
                             ipc.of[address].emit("RendererProcessResult", { result });
@@ -94,18 +101,45 @@ class ElectronWindow {
             return el;
         });
     }
-    grab(conf, contextString) {
+    startRecordModel(conf, contextString, opts) {
         return __awaiter(this, void 0, void 0, function* () {
-            let context;
-            if (contextString) {
-                // tslint:disable-next-line:no-eval
-                context = eval(context);
-            }
-            else {
-                context = window.document;
-            }
-            return Grabber(window).grab(conf, context);
+            opts = opts || { pollingTimeout: 50 };
+            this.modelChan = chan2_1.default();
+            let oldJsonData = null;
+            (() => __awaiter(this, void 0, void 0, function* () {
+                while (true) {
+                    const data = this.grab(conf, contextString);
+                    if (data === null) {
+                        yield sleep_es6_1.default(opts.pollingTimeout);
+                        continue;
+                    }
+                    const jsonData = JSON.stringify(data);
+                    if (jsonData === oldJsonData) {
+                        yield sleep_es6_1.default(opts.pollingTimeout);
+                        continue;
+                    }
+                    oldJsonData = jsonData;
+                    this.modelChan.put(data);
+                    yield sleep_es6_1.default(opts.pollingTimeout);
+                }
+            }))();
         });
+    }
+    getNextData() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.modelChan.get();
+        });
+    }
+    grab(conf, contextString) {
+        let context;
+        if (contextString) {
+            // tslint:disable-next-line:no-eval
+            context = eval(context);
+        }
+        else {
+            context = window.document;
+        }
+        return Grabber(window).grab(conf, context);
     }
     click(selector, opts) {
         return __awaiter(this, void 0, void 0, function* () {

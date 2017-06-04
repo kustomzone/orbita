@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const page_grabber_1 = require("page-grabber");
+const sleep_es6_1 = require("sleep-es6");
 const TestServer_1 = require("./../../__fixtures__/TestServer");
 const Window_1 = require("./../../Window");
 const testServer = new TestServer_1.default();
@@ -67,6 +68,15 @@ it("evaluate 2 windows", () => __awaiter(this, void 0, void 0, function* () {
     const results = yield Promise.all([window2.evaluate("window.call1()")]);
     expect(results).toEqual(["ho1"]);
     yield window2.close();
+}));
+it("subscribe", () => __awaiter(this, void 0, void 0, function* () {
+    yield window.open("http://127.0.0.1:" + testServer.port + "/page3.html");
+    yield window.startRecordModel({ value: page_grabber_1.sel("#div1", page_grabber_1.text()) }, "window", { pollingTimeout: 50 });
+    yield sleep_es6_1.default(500);
+    const lastValue = (yield window.getNextData());
+    expect(lastValue.value > 10).toBeTruthy();
+    yield sleep_es6_1.default(500);
+    expect((yield window.getNextData()).value + 10 > lastValue.value).toBeTruthy();
 }));
 afterAll(() => __awaiter(this, void 0, void 0, function* () {
     yield window.close();
